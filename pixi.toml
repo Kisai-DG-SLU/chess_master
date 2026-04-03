@@ -1,11 +1,31 @@
 [workspace]
 authors = ["Damien GUESDON <kisai.dg.slu@gmail.com>"]
-channels = ["conda-forge"]
+channels = ["conda-forge", "pypi"]
 name = "chess_master"
-platforms = ["osx-64"]
+platforms = ["linux-64"]
 version = "0.1.0"
 
 [tasks]
+start = "python -m api.main"
+test = "pytest tests/"
+lint = "ruff check ."
+format = "black ."
+typecheck = "mypy agent/ api/ rag/"
 
 [dependencies]
-python = "3.10.*"
+python = ">=3.10"
+
+[pypi-dependencies]
+fastapi = "*"
+uvicorn = "*"
+pydantic = "*"
+langchain-core = "*"
+langgraph = "*"
+langchain-openai = "*"
+pymilvus = "*"
+requests = "*"
+stockfish = "*"
+pytest = "*"
+ruff = "*"
+black = "*"
+mypy = "*"

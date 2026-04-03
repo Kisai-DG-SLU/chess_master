@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach Échecs FFE - Agent IA</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>♟️ Coach Échecs FFE</h1>
+            <p class="subtitle">Votre assistant IA pour apprendre les ouvertures</p>
+        </header>
+        
+        <main>
+            <div class="board-section">
+                <div class="board-container">
+                    <div id="chess-board"></div>
+                </div>
+                <div class="controls">
+                    <button onclick="resetBoard()">Nouvelle Partie</button>
+                    <button onclick="setPosition('ruy_lopez')">Ruy Lopez</button>
+                    <button onclick="setPosition('sicilian')">Sicilienne</button>
+                    <button onclick="setPosition('queens_gambit')">Gambit Dame</button>
+                </div>
+                <div class="fen-display">
+                    <label>Position FEN:</label>
+                    <input type="text" id="fen-input" readonly placeholder="Cliquez sur l'échiquier">
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <h2>Analyse de l'Agent IA</h2>
+                <div class="player-level">
+                    <label>Niveau:</label>
+                    <select id="player-level">
+                        <option value="beginner">Débutant</option>
+                        <option value="intermediate" selected>Intermédiaire</option>
+                        <option value="advanced">Avancé</option>
+                    </select>
+                </div>
+                
+                <button class="analyze-btn" onclick="analyzePosition()">🔍 Analyser cette position</button>
+                
+                <div id="analysis-result" class="result-box">
+                    <p class="placeholder">Lancez l'analyse pour voir les recommandations</p>
+                </div>
+            </div>
+        </main>
+        
+        <aside>
+            <h3>Ouvertures recommandées</h3>
+            <div id="recommendations" class="recommendations">
+                <div class="opening-card">
+                    <h4>Ruy Lopez</h4>
+                    <p>1.e4 e5 2.Nf3 Nc6 3.Bb5</p>
+                    <span class="tag tactical">Tactique</span>
+                </div>
+                <div class="opening-card">
+                    <h4>Sicilienne</h4>
+                    <p>1.e4 c5</p>
+                    <span class="tag aggressive">Agressive</span>
+                </div>
+                <div class="opening-card">
+                    <h4>Gambit Dame</h4>
+                    <p>1.d4 d5 2.c4</p>
+                    <span class="tag positional">Positionnel</span>
+                </div>
+            </div>
+        </aside>
+        
+        <footer>
+            <p> Projet P13 - Agent IA Échecs | Fédération Française des Échecs</p>
+        </footer>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
