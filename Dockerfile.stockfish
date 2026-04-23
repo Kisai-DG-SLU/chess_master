@@ -1,0 +1,4 @@
+FROM debian:bookworm-slim
+RUN apt-get -o APT::Sandbox::User=root update &&     apt-get -o APT::Sandbox::User=root install -y stockfish &&     rm -rf /var/lib/apt/lists/*
+# On utilise le chemin absolu pour Debian
+ENTRYPOINT ["/usr/games/stockfish"]

@@ -1,0 +1,68 @@
+
+/* Rendu élégant et lisible pour les résultats d'analyse */
+pre {
+    white-space: pre-wrap !important;       /* Force le respect des retours à la ligne */
+    word-wrap: break-word !important;       /* Coupe les mots trop longs */
+    overflow-x: hidden !important;          /* Supprime le scroll horizontal */
+    background-color: #282c34;              /* Thème sombre type IDE */
+    color: #abb2bf;
+    padding: 1.5rem;
+    border-radius: 8px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-height: 60vh;
+    overflow-y: auto;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    border: 1px solid #1e2127;
+}
+
+.analysis-card {
+  background: #ffffff;
+  border-left: 5px solid #28a745;
+  padding: 1.5rem;
+  margin-top: 20px;
+  border-radius: 6px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  color: #333;
+}
+.analysis-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+}
+.evaluation {
+  font-size: 1.1em;
+  margin-bottom: 15px;
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+}
+.highlight {
+  color: #0056b3;
+  font-weight: bold;
+}
+.theory-section p {
+  line-height: 1.6;
+  color: #555;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+.recommendations ul {
+  padding-left: 20px;
+}
+.recommendations li {
+  margin-bottom: 8px;
+  color: #444;
+}
+.error-msg {
+  color: #721c24;
+  background-color: #f8d7da;
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 20px;
+}

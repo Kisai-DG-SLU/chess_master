@@ -1,0 +1,24 @@
+nohup: ignoring input
+[W 2026-04-23 18:21:19.729 ServerApp] ServerApp.token config is deprecated in 2.0. Use IdentityProvider.token.
+[I 2026-04-23 18:21:19.794 ServerApp] jupyter_lsp | extension was successfully linked.
+[I 2026-04-23 18:21:19.798 ServerApp] jupyter_server_terminals | extension was successfully linked.
+[W 2026-04-23 18:21:19.800 LabApp] 'token' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[W 2026-04-23 18:21:19.800 LabApp] 'password' has moved from NotebookApp to ServerApp. This config will be passed to ServerApp. Be sure to update your config before our next release.
+[I 2026-04-23 18:21:19.804 ServerApp] jupyterlab | extension was successfully linked.
+[I 2026-04-23 18:21:20.969 ServerApp] notebook_shim | extension was successfully linked.
+[W 2026-04-23 18:21:21.008 ServerApp] All authentication is disabled.  Anyone who can connect to this server will be able to run code.
+[I 2026-04-23 18:21:21.008 ServerApp] notebook_shim | extension was successfully loaded.
+[I 2026-04-23 18:21:21.011 ServerApp] jupyter_lsp | extension was successfully loaded.
+[I 2026-04-23 18:21:21.011 ServerApp] jupyter_server_terminals | extension was successfully loaded.
+[I 2026-04-23 18:21:21.014 LabApp] JupyterLab extension loaded from /workspace/chess_master/.pixi/envs/default/lib/python3.14/site-packages/jupyterlab
+[I 2026-04-23 18:21:21.014 LabApp] JupyterLab application directory is /workspace/chess_master/.pixi/envs/default/share/jupyter/lab
+[I 2026-04-23 18:21:21.014 LabApp] Extension Manager is 'pypi'.
+[I 2026-04-23 18:21:21.232 ServerApp] jupyterlab | extension was successfully loaded.
+[I 2026-04-23 18:21:21.233 ServerApp] The port 8888 is already in use, trying another port.
+[I 2026-04-23 18:21:21.233 ServerApp] The port 8889 is already in use, trying another port.
+[I 2026-04-23 18:21:21.234 ServerApp] Serving notebooks from local directory: /workspace/chess_master
+[I 2026-04-23 18:21:21.234 ServerApp] Jupyter Server 2.17.0 is running at:
+[I 2026-04-23 18:21:21.234 ServerApp] http://sophia-notebook-577fd54f66-dxn7s:8890/lab
+[I 2026-04-23 18:21:21.234 ServerApp]     http://127.0.0.1:8890/lab
+[I 2026-04-23 18:21:21.234 ServerApp] Use Control-C to stop this server and shut down all kernels (twice to skip confirmation).
+[I 2026-04-23 18:21:21.511 ServerApp] Skipped non-installed server(s): basedpyright, bash-language-server, dockerfile-language-server-nodejs, javascript-typescript-langserver, jedi-language-server, julia-language-server, pyrefly, pyright, python-language-server, python-lsp-server, r-languageserver, sql-language-server, texlab, typescript-language-server, unified-language-server, vscode-css-languageserver-bin, vscode-html-languageserver-bin, vscode-json-languageserver-bin, yaml-language-server

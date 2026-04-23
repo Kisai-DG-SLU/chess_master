@@ -2,7 +2,11 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y stockfish curl && rm -rf /var/lib/apt/lists/*
+ENV PATH="/usr/games:${PATH}"
+
+RUN apt-get -o APT::Sandbox::User=root update && \
+    apt-get -o APT::Sandbox::User=root install -y stockfish curl && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY pixi.toml .
 COPY pyproject.toml .
@@ -17,7 +21,7 @@ RUN pip install --no-cache-dir \
     pymilvus \
     requests \
     stockfish \
-    pytest
+    pytest pymongo
 
 COPY agent/ ./agent/
 COPY api/ ./api/

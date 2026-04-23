@@ -1,15 +1,17 @@
 services:
   app:
+    network_mode: "host"
     build: 
       context: .
+      network: host
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
-      - MILVUS_HOST=milvus
+      - MILVUS_HOST=localhost
       - MILVUS_PORT=19530
-      - MONGODB_URI=mongodb://mongodb:27017
+      - MONGODB_URI=mongodb://localhost:27017
     depends_on:
       - milvus
       - mongodb
@@ -18,6 +20,7 @@ services:
     command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
   milvus:
+    network_mode: "host"
     image: milvusdb/milvus:v2.3.3
     ports:
       - "19530:19530"
@@ -29,6 +32,7 @@ services:
       - milvus_data:/var/lib/milvus
 
   mongodb:
+    network_mode: "host"
     image: mongo:7.0
     ports:
       - "27017:27017"
@@ -36,11 +40,13 @@ services:
       - mongodb_data:/data/db
 
   stockfish:
-    image: niklasf/stockfish:latest
+    network_mode: "host"
+    image: localhost/stockfish:local
     ports:
       - "8080:8080"
 
   frontend:
+    network_mode: "host"
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -50,6 +56,7 @@ services:
       - app
 
   frontend-angular:
+    network_mode: "host"
     build:
       context: ./frontend-angular
       dockerfile: Dockerfile
@@ -59,8 +66,9 @@ services:
       - app
     volumes:
       - ./frontend-angular:/app
-    command: ng serve --host 0.0.0.0 --port 4200
+    command: sh -c "npm install && ng serve --host 0.0.0.0 --port 4200"
 
 volumes:
   milvus_data:
   mongodb_data:
+
