@@ -119,3 +119,17 @@ def get_user_games(user_id: str, limit: int = 10):
         return {"games": games}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/videos/{opening}")
+def search_videos(opening: str):
+    try:
+        import requests, re
+        query = f"{opening} chess opening tutorial"
+        url = f"https://www.youtube.com/results?search_query={requests.utils.quote(query)}"
+        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+        video_ids = re.findall(r'videoId":"([a-zA-Z0-9_-]{11})', response.text)
+        videos = [{"video_id": v, "url": f"https://www.youtube.com/watch?v={v}", "title": f"{opening}"} for v in video_ids[:5]]
+        return {"videos": videos}
+    except Exception as e:
+        return {"videos": [], "error": str(e)}
