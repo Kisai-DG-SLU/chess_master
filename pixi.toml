@@ -17,7 +17,7 @@ start-angular = "cd frontend-angular && ng serve"
 build-angular = "cd frontend-angular && ng build"
 docker-up = "docker compose up --build"
 docker-down = "docker compose down"
-demo = "docker compose up --build -d && echo 'Frontend: http://localhost:4201 - API: http://localhost:8000'"
+demo = "docker-compose up --build -d && echo 'Frontend: http://localhost:4201 - API: http://localhost:8000'"
 
 [dependencies]
 python = ">=3.10"
