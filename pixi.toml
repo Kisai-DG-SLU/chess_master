@@ -22,6 +22,7 @@ demo = "docker-compose up --build -d && echo 'Frontend: http://localhost:4201 - 
 [dependencies]
 python = ">=3.10"
 nodejs = "22.*"  # Version disponible dans conda-forge
+docker-compose = "*"  # Pour la démo P13
 
 [pypi-dependencies]
 fastapi = "*"
