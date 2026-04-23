@@ -15,10 +15,13 @@ install-angular = "npm install -g @angular/cli"
 create-angular-app = "ng new frontend-angular --skip-git --style=css --routing=false"
 start-angular = "cd frontend-angular && ng serve"
 build-angular = "cd frontend-angular && ng build"
+docker-up = "docker compose up --build"
+docker-down = "docker compose down"
+demo = "docker compose up --build -d && echo 'Frontend: http://localhost:4201 - API: http://localhost:8000'"
 
 [dependencies]
 python = ">=3.10"
-nodejs = "18"  # Pour Angular 17
+nodejs = "22.*"  # Version disponible dans conda-forge
 
 [pypi-dependencies]
 fastapi = "*"
