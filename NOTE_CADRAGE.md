@@ -128,26 +128,125 @@ Le Model Context Protocol (MCP) permet une modularité accrue :
 
 ---
 
-## 6. Perspectives - Computer Vision
+## 6. Perspectives - Computer Vision & MCP
 
-### 6.1 Vision Future
+### 6.1 Vision Future (Système Vidéo Avancé)
 
-Conception d'un système d'analyse vidéo :
+**Objectif** : Résoudre la limitation des recherches textuelles YouTube (vidéos de 45 min pour 1 coup).
+
+**Solution conceptuelle** :
+- Stocker les vidéos pertinentes (YouTube API)
+- Analyser chaque frame pour détecter l'échiquier
+- Convertir en notation FEN via modèle de vision
+- Indexer par position exacte avec timestamps
+- Servir via MCP (Model Context Protocol)
+
+**Bénéfices** :
+- ✅ Précision : Timestamp exact pour le coup demandé
+- ✅ Pertinence : Recherche par FEN vs mots-clés
+- ✅ UX : Accès direct au coup qui intéresse
+- ✅ Innovation : Aucun concurrent direct sur le marché
+
+### 6.2 Architecture MCP (Model Context Protocol)
 
 ```
-┌─────────┐    ┌──────────┐    ┌─────────┐    ┌─────────┐
-│  Video  │───▶│  Frame   │───▶│  FEN    │───▶│ Analyse │
-│  Input  │    │ Extract  │    │ Extract │    │  Agent  │
-└─────────┘    └──────────┘    └─────────┘    └─────────┘
+┌─────────────────────────────────┐
+│         Client MCP (ChessMasterAI)        │
+└─────────────┬───────────────────────┘
+              │ MCP
+     ┌──────▼──────┐  ┌──────▼──────┐  ┌──────▼──────┐
+     │  Video MCP  │  │ Vision MCP  │  │ Search MCP  │
+     │   Server    │  │   Server    │  │   Server    │
+     │            │  │            │  │            │
+     │ Ingestion   │  │ FEN Extract │  │ FEN Search  │
+     │ Stockage   │  │ Board Det.  │  │ Timestamp   │
+     │ YouTube API│  │ Piece Det.  │  │ Ranking    │
+     └────────────┘  └────────────┘  └────────────┘
 ```
 
-### 6.2 Composants
+**Outils exposés** :
+- `find_video(fen: string, move_number: int)` → URL + timestamp
+- `extract_fen(frame_id: string)` → FEN + confidence
+- `detect_board(frame_id: string)` → Coordonnées
 
-1. **Capture vidéo** : API caméra / upload
-2. **Détection échiquier** : YOLO / OpenCV
-3. **Lecture pièces** : CNN classification
-4. **Génération FEN** : Transformation coordinate
-5. **Analyse** : Agent existant
+### 6.3 Composants Techniques
+
+| Composant | Technologie | Détails |
+|------------|-------------|---------|
+| **Capture vidéo** | YouTube API / Upload | API quotas, formats supportés |
+| **Extraction frames** | FFmpeg | 1 frame/2 sec, redimensionnement |
+| **Détection échiquier** | YOLO v8 / OpenCV | Harris corner, perspective transform |
+| **Lecture pièces** | CNN personnalisé | Entraînement sur 10k images |
+| **Génération FEN** | Algorithme coords | Transformation 8x8 → notation |
+| **Indexation** | Milvus | Embeddings FEN, recherche vectorielle |
+| **Serveur MCP** | Node.js / Python | Stdio, HTTP, WebSocket |
+
+### 6.4 Étude de Faisabilité (Coût)
+
+**Build (Développement)** :
+
+| Poste | Coût estimé | Détails |
+|-------|-------------|---------|
+| Pipeline Vidéo | 2 000€ | FFmpeg, stockage S3, métadonnées |
+| Modèle Vision (YOLO+CNN) | 3 000€ | Entraînement, validation, optim |
+| Serveur MCP & Intégration | 1 500€ | Dev serveur, API ChessMasterAI |
+| Frontend (Timestamp Player) | 1 000€ | Player vidéo avec marqueurs |
+| Tests & Documentation | 500€ | Tests unitaires, guides MCP |
+| **Total Build** | **8 000€** | |
+
+**OPEX (12 mois)** :
+
+| Poste | Coût mensuel | Coût annuel |
+|-------|--------------|-------------|
+| Infrastructure (GPU Cloud) | 300€ | 3 600€ |
+| Stockage Vidéo (S3) | 100€ | 1 200€ |
+| API YouTube (quotas) | 50€ | 600€ |
+| Monitoring & Maintenance | 150€ | 1 800€ |
+| **Total OPEX** | **600€** | **7 200€** |
+
+**Récapitulatif** :
+
+| Scénario | Coût |
+|----------|------|
+| Build Vidéo Vision | 8 000€ |
+| OPEX 12 mois | 7 200€ |
+| **Total 1ère année** | **15 200€** |
+| Build + 24 mois OPEX | **22 400€** |
+
+### 6.5 Limites & Solutions
+
+| Limite | Impact | Solution |
+|--------|--------|---------|
+| Détection échiquier sensible | 🔥🔥 Fort | Calibration préalable, fallback manuel |
+| Erreurs lecture pièces | 🔥 Moyen | CNN spécialisé, validation humaine |
+| Frames par seconde (coût) | 🔥 Moyen | Analyse sélective, détection mouvements |
+| Conditions lumière | 🔥 Faible | Prétraitement images (normalisation) |
+| Multiples caméras | 🔥 Moyen | Tracking échiquier principal, masquage |
+| Performance (GPU) | 🔥🔥 Fort | Parallélisation, GPU cloud |
+| Stockage (volume) | 🔥 Moyen | Compression, nettoyage régulier |
+| Dépendance YouTube | 🔥 Moyen | Mirroring local, multiples sources |
+
+### 6.6 Roadmap
+
+**Phase 1 : POC (2 semaines)** ✅
+- Pipeline basique : extraction frames (FFmpeg)
+- Détection échiquier (OpenCV/Harris)
+- Conversion FEN basique (sans CNN)
+
+**Phase 2 : Modèle Avancé (1 mois)** 🔨
+- Entraînement CNN (10k images annotées)
+- Précision pièces >95%
+- Gestion multi-angles
+
+**Phase 3 : MCP & Production (1 mois)** 🔨
+- Serveur MCP complet
+- Intégration ChessMasterAI
+- Player vidéo avec UI timestamps
+
+**Phase 4 : Scale & Optimisation (continu)** 🔨
+- Compression vidéos intelligente
+- Cache FEN predictions
+- Analytics de usage
 
 ---
 
