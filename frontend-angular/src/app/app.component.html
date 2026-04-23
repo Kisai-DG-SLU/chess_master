@@ -1,0 +1,37 @@
+<div class="container">
+  <header>
+    <h1>♟️ Coach Échecs FFE - Angular + ngx-chessboard</h1>
+    <p class="subtitle">Agent IA pour l'apprentissage des ouvertures</p>
+  </header>
+  
+  <main>
+    <div class="board-section">
+      <ngx-chess-board 
+        #board
+        [showCoords]="true"
+        [dragPieceEnabled]="true">
+      </ngx-chess-board>
+    </div>
+    
+    <div class="controls">
+      <button (click)="resetBoard()">Nouvelle Partie</button>
+      <button (click)="setRuyLopez()">Ruy Lopez</button>
+      <button (click)="setSicilian()">Sicilienne</button>
+    </div>
+    
+    <div class="analysis">
+      <label>Niveau:</label>
+      <select [(ngModel)]="playerLevel">
+        <option value="beginner">Débutant</option>
+        <option value="intermediate" selected>Intermédiaire</option>
+        <option value="advanced">Avancé</option>
+      </select>
+      
+      <button (click)="analyzePosition()">🔍 Analyser</button>
+      
+      <div *ngIf="analysisResult" class="result">
+        <pre>{{ analysisResult }}</pre>
+      </div>
+    </div>
+  </main>
+</div>

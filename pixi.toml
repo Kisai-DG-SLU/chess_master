@@ -18,7 +18,7 @@ build-angular = "cd frontend-angular && ng build"
 
 [dependencies]
 python = ">=3.10"
-nodejs = ">=18"  # Pour Angular
+nodejs = "18"  # Pour Angular 17
 
 [pypi-dependencies]
 fastapi = "*"
@@ -28,6 +28,7 @@ langchain-core = "*"
 langgraph = "*"
 langchain-openai = "*"
 pymilvus = "*"
+pymongo = "*"
 requests = "*"
 stockfish = "*"
 pytest = "*"
