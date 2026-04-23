@@ -39,9 +39,11 @@ Le projet utilise un pipeline CI/CD complet avec GitHub Actions qui inclut:
 - **Analyse de position** avec Stockfish (engine open-source)
 - **Recherche théorique** via API Lichess
 - **Système RAG** avec recherche sémantique sur base d'ouvertures
-- **Interface interactive** avec échiquier visuel
+- **Interface interactive** avec échiquier visuel (Angular + ngx-chessboard)
+- **Gestion utilisateurs et parties** avec MongoDB
+- **Extraction FEN depuis vidéo** (module Computer Vision)
 - **Architecture modulaire** prête pour MCP (Model Context Protocol)
-- **Conteneurisation** complète avec Docker Compose
+- **Conteneurisation** complète avec Docker Compose (incluant Angular)
 
 ## 🏗️ Architecture
 
@@ -50,9 +52,13 @@ Le projet utilise un pipeline CI/CD complet avec GitHub Actions qui inclut:
 - **Orchestration**: LangGraph pour workflow décisionnel
 - **API**: FastAPI (async, typé)
 - **Vector DB**: Milvus (avec fallback en mémoire pour POC)
-- **Frontend**: HTML/CSS/JS avec échiquier interactif
+- **NoSQL**: MongoDB (utilisateurs, parties)
+- **Frontend**: 
+  - Angular avec ngx-chessboard (frontend-angular/)
+  - HTML/CSS/JS avec échiquier interactif (frontend/)
 - **Container**: Docker Compose
 - **Engine**: Stockfish
+- **Vision**: Module d'extraction FEN depuis vidéo (vision/)
 
 ### Structure du projet
 ```
@@ -62,19 +68,26 @@ chess_master/
 │   ├── state.py             # Types d'état
 │   └── tools.py             # Outils (Stockfish, Lichess, RAG)
 ├── api/                     # API FastAPI
-│   └── main.py              # Endpoints REST
+│   └── main.py              # Endpoints REST (incl. MongoDB)
 ├── rag/                     # Système RAG
 │   ├── vector_store.py      # Store en mémoire (POC)
 │   └── milvus_client.py     # Client Milvus (prod)
-├── frontend/                # Interface utilisateur
+├── mongodb/                 # Intégration MongoDB
+│   └── models.py            # Modèles et connexion
+├── frontend/                # Interface utilisateur (HTML/CSS/JS)
 │   ├── index.html           # Page principale
 │   ├── styles.css           # Styles
 │   └── app.js               # Logique interactive
+├── frontend-angular/        # Interface Angular avec ngx-chessboard
+│   ├── src/app/             # Composants Angular
+│   └── package.json         # Dépendances npm
+├── vision/                  # Module Computer Vision
+│   └── video_to_fen.py     # Extraction FEN depuis vidéo
 ├── tests/                   # Tests unitaires
-├── docker-compose.yml       # Orchestration Docker
+├── docker-compose.yml       # Orchestration Docker (avec Angular)
 ├── Dockerfile               # Image Python
 ├── NOTE_CADRAGE.md          # Documentation technique
-└── pixi.toml                # Configuration Pixi
+└── pixi.toml                # Configuration Pixi (avec Node.js)
 ```
 
 ## ⚙️ Installation
@@ -250,6 +263,24 @@ MIT License - voir le fichier [LICENSE](LICENSE) pour plus de détails.
 - [Lichess API](https://lichess.org/api)
 - [Spécifications du projet](specs/)
 
+## 🆕 Nouveaux composants ajoutés
+
+### MongoDB (Base NoSQL)
+- **Modèles**: `mongodb/models.py` - Gestion utilisateurs et parties
+- **API**: Routes `/users`, `/games` dans `api/main.py`
+- **Docker**: Service `mongodb` dans docker-compose.yml
+
+### Frontend Angular avec ngx-chessboard
+- **Répertoire**: `frontend-angular/`
+- **Composant**: Intégration `NgxChessBoardModule`
+- **Fonctionnalités**: Échiquier interactif, analyse de position
+- **Docker**: Service `frontend-angular` (port 4201)
+
+### Module Computer Vision
+- **Fichier**: `vision/video_to_fen.py`
+- **Fonctionnalités**: Extraction FEN depuis vidéo, détection d'échiquier
+- **État**: POC ( nécessite un modèle CNN pour la reconnaissance de pièces)
+
 ## ✅ Configuration Validée
 
 La configuration du projet a été validée avec succès le 2026-04-03.
@@ -258,3 +289,4 @@ La configuration du projet a été validée avec succès le 2026-04-03.
 - ✅ Structure du projet complète
 - ✅ Documentation technique rédigée
 - ✅ Livrables prêts pour soutenance
+- ✅ Spécifications respectées (Angular, MongoDB, Vision)

@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 import agent.graph as agent_graph
+from mongodb.models import MongoDB
 
 
 app = FastAPI(title="Chess Agent API", version="0.1.0")
@@ -55,3 +56,58 @@ def get_openings():
             {"name": "English Opening", "moves": "1.c4", "style": "flexible"}
         ]
     }
+
+
+# MongoDB routes
+mongodb = MongoDB()
+
+
+class UserCreate(BaseModel):
+    username: str
+    email: str
+    level: str = "beginner"
+
+
+class GameCreate(BaseModel):
+    user_id: str
+    position: str
+    analysis: dict
+    recommendations: list[str]
+
+
+@app.post("/users")
+def create_user(user: UserCreate):
+    try:
+        user_id = mongodb.create_user(user.dict())
+        return {"user_id": user_id, "message": "User created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/users/{user_id}")
+def get_user(user_id: str):
+    try:
+        user = mongodb.get_user(user_id)
+        if user:
+            return user
+        raise HTTPException(status_code=404, detail="User not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/games")
+def save_game(game: GameCreate):
+    try:
+        game_id = mongodb.save_game(game.dict())
+        return {"game_id": game_id, "message": "Game saved successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/users/{user_id}/games")
+def get_user_games(user_id: str, limit: int = 10):
+    try:
+        games = mongodb.get_user_games(user_id, limit)
+        return {"games": games}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

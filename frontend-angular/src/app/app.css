@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1.1em;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.chessboard {
+  margin: 20px auto;
+}
+
+.controls {
+  text-align: center;
+  margin: 20px;
+}
+
+.controls button {
+  margin: 5px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.controls button:hover {
+  background-color: #0056b3;
+}
+
+.analysis {
+  text-align: center;
+  width: 100%;
+  max-width: 600px;
+}
+
+.analysis select {
+  margin: 10px;
+  padding: 5px;
+}
+
+.analysis button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  text-align: left;
+}
+
+.result pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
