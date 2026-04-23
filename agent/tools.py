@@ -16,7 +16,7 @@ def analyze_position(fen: str) -> str:
     """
     try:
         import stockfish
-        sf = stockfish.Stockfish(path="/usr/bin/stockfish")
+        sf = stockfish.Stockfish(path="http://stockfish")
         sf.set_fen_position(fen)
         
         best_move = sf.get_best_move()
