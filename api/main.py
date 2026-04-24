@@ -186,11 +186,23 @@ def search_videos(opening: str):
         youtube = build("youtube", "v3", developerKey=api_key)
         
         search_response = youtube.search().list(
-            q=f"{opening} chess",
+            q=f"{opening} chess opening",
             part="snippet",
             type="video",
             maxResults=5
         ).execute()
+        
+        items = search_response.get("items", [])
+        if not items:
+            return {
+                "videos": [],
+                "opening": opening,
+                "debug": {
+                    "query": f"{opening} chess opening",
+                    "total_results": search_response.get("pageInfo", {}).get("totalResults", 0),
+                    "message": "Aucune vidéo trouvée. Vérifiez la requête YouTube."
+                }
+            }
         
         videos = []
         for item in search_response.get("items", []):
