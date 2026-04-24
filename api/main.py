@@ -225,7 +225,7 @@ def search_videos(opening: str):
         api_key = os.getenv("YOUTUBE_API_KEY")
         if not api_key:
             return {"videos": [], "error": "YOUTUBE_API_KEY environment variable not set"}
-        query = quote(f"{opening} chess opening")
+        query = quote(f"{opening} échecs ouverture")
         
         # 1. Recherche des vidéos
         search_url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=15&key={api_key}&regionCode=FR&relevanceLanguage=fr"

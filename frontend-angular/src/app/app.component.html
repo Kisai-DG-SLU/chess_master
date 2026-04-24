@@ -304,23 +304,12 @@
 
       <!-- Theorie -->
       <div class="analysis-result">
-        <h3>Theorie</h3>
+        <h3>Contexte</h3>
         <div *ngIf="analysisData.theory">
           <div class="analysis-item" [innerHTML]="analysisData.theory"></div>
         </div>
         <div *ngIf="!analysisData.theory" style="color: #999;">
-          Aucune theorie disponible.
-        </div>
-      </div>
-
-      <!-- Contexte RAG -->
-      <div class="analysis-result">
-        <h3>Contexte RAG</h3>
-        <div *ngIf="analysisData.theory">
-          <div class="analysis-item" [innerHTML]="analysisData.theory"></div>
-        </div>
-        <div *ngIf="!analysisData.theory" style="color: #999;">
-          Aucun contexte RAG disponible.
+          Aucun contexte disponible.
         </div>
       </div>
 
