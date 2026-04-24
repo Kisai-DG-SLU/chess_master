@@ -7,16 +7,24 @@ DIMENSION = 768
 
 
 def get_embedding(text: str) -> list[float]:
-    """Generate embedding for text using OpenAI embeddings."""
+    """Generate embedding for text using Mistral embeddings."""
     try:
-        from langchain_openai import OpenAIEmbeddings
+        from langchain_mistralai import MistralEmbeddings
         import os
         
-        api_key = os.getenv("OPENAI_API_KEY", "")
+        api_key = os.getenv("MISTRAL_API_KEY", "FbKmIS62U0rvtHih2j1Of7TLg5OFeSwD")
         if api_key:
-            embeddings = OpenAIEmbeddings(api_key=api_key)
+            embeddings = MistralEmbeddings(api_key=api_key)
             vector = embeddings.embed_query(text)
             return vector
+    except Exception:
+        pass
+    
+    try:
+        from sentence_transformers import SentenceTransformer
+        model = SentenceTransformer('all-MiniLM-L6-v2')
+        vector = model.encode(text).tolist()
+        return vector
     except Exception:
         pass
     
