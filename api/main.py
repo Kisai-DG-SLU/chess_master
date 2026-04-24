@@ -208,65 +208,92 @@ def get_user_games(user_id: str, limit: int = 10):
 
 @app.get("/api/v1/videos")
 def search_videos(opening: str):
-    """Recherche vidéos YouTube via l'API officielle avec filtrage pertinent."""
+    """Recherche vidéos YouTube avec filtrage pertinent + durée max 20 minutes."""
     try:
         import os
         from urllib.parse import quote
+        import re
+        
+        def parse_duration(iso: str) -> int:
+            """Parse une durée ISO 8601 (ex: PT5M30S) en secondes."""
+            match = re.match(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', iso)
+            if not match:
+                return 0
+            h, m, s = match.groups()
+            return (int(h or 0) * 3600) + (int(m or 0) * 60) + int(s or 0)
         
         api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyCScqzwMhEK5iKyouXH7PhivnKm3q9dl0k")
         query = quote(f"{opening} chess opening")
-        url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=10&key={api_key}"
         
-        response = requests.get(url, timeout=10)
-        data = response.json()
+        # 1. Recherche des vidéos
+        search_url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=15&key={api_key}&key={api_key}"
+        resp = requests.get(search_url, timeout=10)
+        data = resp.json()
         
         if "error" in data:
-            return {
-                "videos": [],
-                "opening": opening,
-                "error": data["error"]["message"],
-                "debug": {"status_code": response.status_code}
-            }
+            return {"videos": [], "opening": opening, "error": data["error"]["message"]}
         
         items = data.get("items", [])
         if not items:
-            return {
-                "videos": [],
-                "opening": opening,
-                "debug": {
-                    "query": f"{opening} chess opening",
-                    "total_results": data.get("pageInfo", {}).get("totalResults", 0),
-                    "message": "Aucune vidéo trouvée."
-                }
-            }
+            return {"videos": [], "opening": opening, "message": "Aucune vidéo trouvée."}
         
-        # Filtrage des vidéos pertinentes
-        # On ne garde que les vidéos avec "chess" dans le titre OU le nom de l'ouverture
-        filtered_videos = []
+        # 2. Filtrer les titres pertinents
         keywords = ["chess", opening.lower()]
-        
+        video_ids = []
         for item in items:
             title = item["snippet"]["title"].lower()
             if any(kw in title for kw in keywords):
-                filtered_videos.append({
-                    "video_id": item["id"]["videoId"],
-                    "title": item["snippet"]["title"],
-                    "description": item["snippet"]["description"][:200],
-                    "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}",
-                    "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
-                    "channel": item["snippet"]["channelTitle"]
-                })
+                video_ids.append(item["id"]["videoId"])
         
-        # Quota YouTube : 1 recherche = 100 units (sur quota journalier de 10 000)
-        quota_used = 100
+        if not video_ids:
+            return {"videos": [], "opening": opening, "message": "Aucune vidéo pertinente après filtre titre."}
+        
+        # 3. Récupérer la durée de chaque vidéo
+        ids_str = ",".join(video_ids[:10])
+        details_url = f"https://www.googleapis.com/youtube/v3/videos?id={ids_str}&part=contentDetails,snippet&key={api_key}"
+        details_resp = requests.get(details_url, timeout=10)
+        details = details_resp.json()
+        
+        # Quota : 100 (search) + 100 (videos.list partie) = 200 units
+        quota_used = 200
+        
+        if "error" in details:
+            return {"videos": [], "opening": opening, "error": details["error"]["message"]}
+        
+        # 4. Filtrer par durée (max 20 minutes = 1200 secondes)
+        MAX_DURATION_SECONDS = 20 * 60
+        filtered_videos = []
+        
+        for item in details.get("items", []):
+            duration_iso = item["contentDetails"]["duration"]
+            duration_sec = parse_duration(duration_iso)
+            
+            if duration_sec > 0 and duration_sec > MAX_DURATION_SECONDS:
+                continue  # On saute les vidéos trop longues
+            
+            filtered_videos.append({
+                "video_id": item["id"],
+                "title": item["snippet"]["title"],
+                "description": item["snippet"]["description"][:200],
+                "url": f"https://www.youtube.com/watch?v={item['id']}",
+                "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
+                "channel": item["snippet"]["channelTitle"],
+                "duration": duration_sec,
+                "duration_formatted": f"{duration_sec // 60}min{duration_sec % 60}s"
+            })
         
         return {
-            "videos": filtered_videos[:5],  # Max 5 vidéos pertinentes
+            "videos": filtered_videos[:5],
             "opening": opening,
             "quota": {
                 "units_used": quota_used,
                 "daily_limit": 10000,
                 "percentage": f"{quota_used/100:.1f}%"
+            },
+            "filtered": {
+                "total_found": len(items),
+                "after_title_filter": len(video_ids),
+                "after_duration_filter": len(filtered_videos)
             }
         }
     except Exception as e:
