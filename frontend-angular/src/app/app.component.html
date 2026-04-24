@@ -38,12 +38,24 @@
          <p style="white-space: pre-line; background: #f8f9fa; padding: 15px; border-radius: 4px; border: 1px solid #e9ecef; color: #444; line-height: 1.6; margin-top: 10px;">{{ analysisData.theory }}</p>
       </div>
 
-      <div>
-         <strong>🎯 Ouvertures associées :</strong>
-         <ul style="padding-left: 20px; color: #444; line-height: 1.6; margin-top: 10px;">
-           <li *ngFor="let rec of analysisData.recommendations">{{ rec }}</li>
-         </ul>
-      </div>
+       <div>
+          <strong>🎯 Ouvertures associées :</strong>
+          <ul style="padding-left: 20px; color: #444; line-height: 1.6; margin-top: 10px;">
+            <li *ngFor="let rec of analysisData.recommendations">{{ rec }}</li>
+          </ul>
+       </div>
+
+       <div *ngIf="videos && videos.length > 0" style="margin-top: 20px;">
+          <strong>🎬 Vidéos explicatives :</strong>
+          <div style="margin-top: 10px;">
+            <div *ngFor="let video of videos" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 5px solid #dc3545;">
+              <a [href]="video.url" target="_blank" style="color: #0056b3; font-weight: bold; text-decoration: none;">
+                {{ video.title }}
+              </a>
+              <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">{{ video.description }}</p>
+            </div>
+          </div>
+       </div>
     </div>
   </div>
 </div>

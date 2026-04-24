@@ -16,6 +16,8 @@ export class AppComponent {
   errorMessage: string = '';
   friendlyMove: string = '';
   friendlyEval: string = '';
+  videos: any[] = [];
+  currentOpening: string = '';
 
   resetBoard() { if (this.board) this.board.reset(); }
   setPosition(fen: string) { if (this.board) this.board.setFEN(fen); }
@@ -37,9 +39,27 @@ export class AppComponent {
     .then(data => {
       this.analysisData = data;
       this.parseStockfish(data?.analysis?.result || '');
+      
+      // Fetch related videos based on opening recommendations
+      if (data?.recommendations?.length > 0) {
+        const openingName = data.recommendations[0].split(' - ')[0];
+        this.currentOpening = openingName;
+        this.fetchVideos(openingName);
+      }
     })
     .catch(err => {
       this.errorMessage = 'Erreur API: ' + err.message;
+    });
+  }
+
+  fetchVideos(opening: string) {
+    fetch(`http://localhost:8000/api/v1/videos?opening=${encodeURIComponent(opening)}`)
+    .then(res => res.json())
+    .then(data => {
+      this.videos = data.videos || [];
+    })
+    .catch(err => {
+      this.videos = [];
     });
   }
 
