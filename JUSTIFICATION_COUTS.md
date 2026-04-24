@@ -33,20 +33,25 @@
 
 ## Vision (Système Vidéo Avancé)
 
+**Solution retenue** : Modèles pré-entraînés Hugging Face (pas d'entraînement custom)
+- `dopaul/chess_piece_detection` : Fine-tuné sur dataset échecs
+- `NAKSTStudio/yolov8m-chess-piece-detection` : YOLOv8 standard
+
 | Poste | Coût | Justification |
 |-------|------|---------------|
-| Pipeline Vidéo | 2 000€ | FFmpeg, stockage S3, métadonnées |
-| Modèle Vision (YOLO+CNN) | 3 000€ | Entraînement sur 10k images annotées |
-| Serveur MCP | 1 500€ | Dev serveur + API ChessMasterAI |
+| Pipeline Vidéo | 1 500€ | FFmpeg, extraction frames, stockage S3, métadonnées |
+| Intégration Modèle HF | 500€ | Chargement modèle pré-entraîné (pas d'entraînement) |
+| Mapping FEN | 500€ | Algorithme détection → board 8x8 → notation FEN |
+| Serveur MCP | 1 000€ | Dev serveur + API ChessMasterAI |
 | Frontend Timestamp Player | 1 000€ | Player vidéo avec marqueurs temporels |
 | Tests & Documentation | 500€ | Tests unitaires, guides MCP |
-| Infrastructure GPU | 3 600€/an | Instance GPU cloud (AWS p3.large ≈ 300€/mois) |
+| Infrastructure GPU léger | 1 800€/an | Instance GPU cloud léger (inférence uniquement ≈ 150€/mois) |
 | Stockage Vidéo S3 | 1 200€/an | 100€/mois pour 500Go stockage + transfert |
-| API YouTube | 600€/an | Quota API dépassé (50€/mois au-delà des quotas gratuits) |
-| Monitoring | 1 800€/an | 150€/mois (inférence GPU + supervision) |
-| **Total Vision Build** | **8 000€** | |
-| **Total Vision OPEX** | **7 200€/an** | |
-| **Total Vision 1ère année** | **15 200€** | |
+| API YouTube | 600€/an | Quota API (50€/mois au-delà des quotas gratuits) |
+| Monitoring | 1 200€/an | 100€/mois (inférence + supervision) |
+| **Total Vision Build** | **4 000€** | **-50% vs estimation précédente (pas d'entraînement)** |
+| **Total Vision OPEX** | **4 800€/an** | |
+| **Total Vision 1ère année** | **8 800€** | |
 
 ---
 
