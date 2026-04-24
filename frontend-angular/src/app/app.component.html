@@ -316,17 +316,10 @@
       <!-- Contexte RAG -->
       <div class="analysis-result">
         <h3>Contexte RAG</h3>
-        <div *ngIf="analysisData.rag">
-          <div *ngIf="analysisData.rag.length > 0">
-            <div *ngFor="let item of analysisData.rag" class="analysis-item">
-              {{ item }}
-            </div>
-          </div>
-          <div *ngIf="analysisData.rag.length === 0" style="color: #999;">
-            Aucun contexte RAG disponible.
-          </div>
+        <div *ngIf="analysisData.theory">
+          <div class="analysis-item" [innerHTML]="analysisData.theory"></div>
         </div>
-        <div *ngIf="!analysisData.rag" style="color: #999;">
+        <div *ngIf="!analysisData.theory" style="color: #999;">
           Aucun contexte RAG disponible.
         </div>
       </div>

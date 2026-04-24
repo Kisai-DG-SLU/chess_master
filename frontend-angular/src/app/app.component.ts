@@ -84,11 +84,19 @@ export class AppComponent {
 
   fetchVideosForAllOpenings() {
     this.videos = [];
+    this.youtubeQuota = null;
+    this.youtubeFiltered = null;
     const promises = this.allRecommendations.map(rec => {
       const opening = rec.split(' - ')[0];
       return fetch(`${this.apiBase}/api/v1/videos?opening=${encodeURIComponent(opening)}`)
         .then(res => res.json())
-        .then(data => ({ opening, videos: (data.videos || []).slice(0, 2) }))
+        .then(data => {
+          if (!this.youtubeQuota && data.quota) {
+            this.youtubeQuota = data.quota;
+            this.youtubeFiltered = data.filtered;
+          }
+          return { opening, videos: (data.videos || []).slice(0, 2) };
+        })
         .catch(() => ({ opening, videos: [] }));
     });
     Promise.all(promises).then(results => {
