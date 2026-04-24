@@ -26,7 +26,6 @@ export class AppComponent {
   userId = '';
   gameSaved = false;
   userGames: any[] = [];
-  private apiBase = `http://${window.location.hostname}:8000`;
 
   resetBoard() { if (this.board) this.board.reset(); }
   setPosition(fen: string) { if (this.board) this.board.setFEN(fen); }
