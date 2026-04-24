@@ -1,5 +1,5 @@
 from pymilvus import connections, Collection, CollectionSchema, FieldSchema, DataType, utility
-from typing import list
+from typing import List as TypingList
 
 
 COLLECTION_NAME = "chess_openings"
