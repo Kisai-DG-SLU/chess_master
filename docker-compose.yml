@@ -45,23 +45,13 @@ services:
     ports:
       - "8080:8080"
 
-  frontend:
-    network_mode: "host"
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "4200:80"
-    depends_on:
-      - app
-
   frontend-angular:
     network_mode: "host"
     build:
       context: ./frontend-angular
       dockerfile: Dockerfile
     ports:
-      - "4201:4200"
+      - "4200:4200"
     depends_on:
       - app
     volumes:
