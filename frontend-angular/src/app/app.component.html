@@ -1,86 +1,438 @@
-<div style="display: flex; gap: 30px; padding: 20px; font-family: sans-serif;">
-  <div>
-    <ngx-chess-board #board [size]="500"></ngx-chess-board>
-    <div style="margin-top: 15px; display: flex; gap: 10px;">
-      <button (click)="resetBoard()" style="padding: 8px 15px; cursor: pointer;">Reset</button>
-      <button (click)="setRuyLopez()" style="padding: 8px 15px; cursor: pointer;">Ruy Lopez</button>
-      <button (click)="setSicilian()" style="padding: 8px 15px; cursor: pointer;">Sicilienne</button>
+<style>
+  .app-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    font-family: Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+  }
+  .column {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .column h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.3rem;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+  }
+  .btn {
+    padding: 10px 16px;
+    margin: 5px 5px 5px 0;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+  .btn-primary {
+    background: #3498db;
+    color: white;
+  }
+  .btn-primary:hover {
+    background: #2980b9;
+  }
+  .btn-success {
+    background: #27ae60;
+    color: white;
+  }
+  .btn-success:hover {
+    background: #219a52;
+  }
+  .btn-warning {
+    background: #f39c12;
+    color: white;
+  }
+  .btn-warning:hover {
+    background: #d68910;
+  }
+  .btn-danger {
+    background: #e74c3c;
+    color: white;
+  }
+  .btn-danger:hover {
+    background: #c0392b;
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+    margin: 5px 0;
+  }
+  .error-message {
+    background: #fee;
+    color: #c33;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+    border: 1px solid #fcc;
+  }
+  .loading {
+    color: #666;
+    font-style: italic;
+    padding: 10px 0;
+  }
+  .form-group {
+    margin-bottom: 12px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    color: #555;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-sizing: border-box;
+  }
+  .user-id {
+    font-weight: bold;
+    color: #27ae60;
+    margin: 10px 0;
+  }
+  .games-list {
+    list-style: none;
+    padding: 0;
+  }
+  .games-list li {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 8px;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  .saved-msg {
+    background: #d4edda;
+    color: #155724;
+    padding: 8px;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+  .analysis-result {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 10px;
+  }
+  .analysis-result h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    font-size: 1.1rem;
+  }
+  .analysis-item {
+    margin-bottom: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .analysis-item:last-child {
+    border-bottom: none;
+  }
+  .quota-bar {
+    width: 100%;
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+  .quota-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    transition: width 0.3s;
+  }
+  .video-card {
+    display: flex;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    transition: box-shadow 0.2s;
+  }
+  .video-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .video-thumb {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .video-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .video-title {
+    font-weight: 600;
+    color: #2c3e50;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 4px;
+    font-size: 0.95rem;
+  }
+  .video-title:hover {
+    color: #3498db;
+  }
+  .video-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 6px;
+    flex-wrap: wrap;
+  }
+  .badge {
+    background: #ecf0f1;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+  }
+  .video-description {
+    font-size: 0.85rem;
+    color: #555;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+  }
+  .stats-text {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 8px 0;
+  }
+  .stats-text span {
+    margin-right: 12px;
+  }
+  @media (max-width: 1100px) {
+    .app-container {
+      grid-template-columns: 1fr;
+    }
+    .video-card {
+      flex-direction: column;
+    }
+    .video-thumb {
+      width: 100%;
+      height: auto;
+    }
+  }
+</style>
+
+<div class="app-container">
+  <!-- Colonne 1 : Echiquier -->
+  <div class="column">
+    <h2>Echiquier</h2>
+    <ngx-chess-board
+      #board
+      [size]="400"
+    ></ngx-chess-board>
+    <div style="margin-top: 15px;">
+      <button class="btn btn-primary" (click)="analyzePosition()">
+        Analyser cette position
+      </button>
+      <button class="btn btn-warning" (click)="resetBoard()">
+        Reinitialiser
+      </button>
     </div>
-    <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
-      <select [(ngModel)]="playerLevel" style="padding: 8px;">
-        <option value="beginner">Débutant</option>
-        <option value="intermediate">Intermédiaire</option>
-        <option value="advanced">Avancé</option>
+    <div style="margin-top: 10px;">
+      <p style="margin: 5px 0; font-weight: 600; color: #555;">Positions rapides :</p>
+      <button class="btn btn-success" (click)="setRuyLopez()">Ruy Lopez</button>
+      <button class="btn btn-success" (click)="setSicilian()">Sicilienne</button>
+    </div>
+    <div style="margin-top: 15px;">
+      <label style="font-weight: 600; color: #555;">Niveau du joueur :</label>
+      <select [(ngModel)]="playerLevel">
+        <option value="beginner">Debutant</option>
+        <option value="intermediate">Intermediaire</option>
+        <option value="advanced">Avance</option>
       </select>
-      <button (click)="analyzePosition()" style="padding: 8px 20px; background: #0056b3; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Analyser la position</button>
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
     </div>
   </div>
+  <!-- Colonne 2 : Analyse & Profil -->
+  <div class="column">
+    <h2>Analyse & Profil</h2>
 
-  <div style="flex: 1; max-width: 600px;">
-    <div *ngIf="errorMessage" style="color: red; padding: 10px; background: #fee;">{{ errorMessage }}</div>
-    
-    <div style="background: white; border-left: 5px solid #ffc107; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 6px; margin-bottom: 20px;">
-      <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">👤 Utilisateur</h3>
-      <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
-        <input [(ngModel)]="username" placeholder="Nom d'utilisateur" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1;">
-        <input [(ngModel)]="email" placeholder="Email" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex: 1;">
-        <button (click)="createUser()" style="padding: 8px 15px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">Créer</button>
+    <!-- Section Profil -->
+    <div style="margin-bottom: 25px;">
+      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Profil Utilisateur</h3>
+      <div class="form-group">
+        <label for="username">Nom d'utilisateur :</label>
+        <input type="text" id="username" [(ngModel)]="username" placeholder="Votre nom" />
       </div>
-      <div *ngIf="userId" style="color: #28a745; font-size: 0.9em;">✅ Utilisateur créé : {{ userId }}</div>
+      <div class="form-group">
+        <label for="email">Email :</label>
+        <input type="email" id="email" [(ngModel)]="email" placeholder="votre@email.com" />
+      </div>
+      <button class="btn btn-primary" (click)="createUser()">Creer mon compte</button>
+      <div *ngIf="userId" class="user-id">
+        Utilisateur cree : {{ userId }}
+      </div>
     </div>
 
-    <div *ngIf="analysisData" style="background: white; border-left: 5px solid #28a745; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 6px;">
-      <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">🧠 Rapport d'Analyse</h3>
-      
-      <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 5px solid #0056b3; margin-bottom: 20px;">
-         <div style="margin-bottom: 10px;">
-           <strong>🎯 Meilleur coup conseillé :</strong> 
-           <span style="color: #0056b3; font-weight: bold; font-size: 1.1em; margin-left: 8px;">{{ friendlyMove }}</span>
-         </div>
-         <div>
-           <strong>⚖️ Évaluation du plateau :</strong> 
-           <span style="margin-left: 8px; color: #444;">{{ friendlyEval }}</span>
-         </div>
+    <!-- Section sauvegarde et historique -->
+    <div style="margin-bottom: 25px;">
+      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Mes Parties</h3>
+      <button class="btn btn-success" (click)="saveGame()" [disabled]="!userId || !analysisData">
+        Sauvegarder cette partie
+      </button>
+      <div *ngIf="gameSaved" class="saved-msg">
+        Partie sauvegardee avec succes !
       </div>
-
-      <div style="margin-bottom: 20px;">
-         <strong>📚 Théorie & Contexte :</strong>
-         <p style="white-space: pre-line; background: #f8f9fa; padding: 15px; border-radius: 4px; border: 1px solid #e9ecef; color: #444; line-height: 1.6; margin-top: 10px;">{{ analysisData.theory }}</p>
-      </div>
-
-       <div>
-          <strong>🎯 Ouvertures associées :</strong>
-          <ul style="padding-left: 20px; color: #444; line-height: 1.6; margin-top: 10px;">
-            <li *ngFor="let rec of analysisData.recommendations">{{ rec }}</li>
-          </ul>
-       </div>
-
-       <div *ngIf="videos && videos.length > 0" style="margin-top: 20px;">
-          <strong>🎬 Vidéos explicatives :</strong>
-          <div style="margin-top: 10px;">
-            <div *ngFor="let video of videos" style="background: #f8f9fa; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 5px solid #dc3545;">
-              <a [href]="video.url" target="_blank" style="color: #0056b3; font-weight: bold; text-decoration: none;">
-                {{ video.title }}
-              </a>
-              <p style="margin: 5px 0 0 0; color: #666; font-size: 0.9em;">{{ video.description }}</p>
-            </div>
-          </div>
-       </div>
-
-       <button (click)="saveGame()" style="margin-top: 20px; padding: 10px 20px; background: #17a2b8; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-         💾 Sauvegarder la partie
-       </button>
-       <div *ngIf="gameSaved" style="margin-top: 10px; color: #17a2b8;">✅ Partie sauvegardée !</div>
-    </div>
-
-    <div *ngIf="userGames.length > 0" style="background: white; border-left: 5px solid #6f42c1; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-radius: 6px; margin-top: 20px;">
-      <h3 style="margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; color: #2c3e50;">📋 Mes Parties</h3>
-      <ul style="padding-left: 20px; color: #444; line-height: 1.6;">
-        <li *ngFor="let game of userGames" style="margin-bottom: 10px; background: #f8f9fa; padding: 10px; border-radius: 4px;">
-          <strong>Partie #{{ game._id }}</strong><br>
-          <small style="color: #666;">{{ game.created_at | date:'medium' }}</small>
+      <ul *ngIf="userGames && userGames.length > 0" class="games-list">
+        <li *ngFor="let game of userGames">
+          Position FEN : {{ game.position?.substring(0, 50) }}...
         </li>
       </ul>
+      <div *ngIf="!userGames || userGames.length === 0" style="color: #999; font-style: italic;">
+        Aucune partie sauvegardee.
+      </div>
+    </div>
+
+    <!-- Section Résultats d'analyse -->
+    <div *ngIf="analysisData">
+      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Resultats de l'analyse</h3>
+
+      <div class="analysis-result">
+        <h3>Recommandations</h3>
+        <div *ngIf="analysisData.recommendations && analysisData.recommendations.length > 0">
+          <div *ngFor="let rec of analysisData.recommendations" class="analysis-item">
+            {{ rec }}
+          </div>
+        </div>
+        <div *ngIf="!analysisData.recommendations || analysisData.recommendations.length === 0" style="color: #999;">
+          Aucune recommendation disponible.
+        </div>
+      </div>
+
+      <div class="analysis-result">
+        <h3>Evaluation Stockfish</h3>
+        <div class="analysis-item">
+          <strong>Coup recommande :</strong> {{ friendlyMove }}
+        </div>
+        <div class="analysis-item">
+          <strong>Evaluation :</strong> {{ friendlyEval }}
+        </div>
+      </div>
+
+      <div class="analysis-result">
+        <h3>Theorie</h3>
+        <div *ngIf="analysisData.theory && analysisData.theory.length > 0">
+          <div *ngFor="let move of analysisData.theory" class="analysis-item">
+            {{ move }}
+          </div>
+        </div>
+        <div *ngIf="!analysisData.theory || analysisData.theory.length === 0" style="color: #999;">
+          Aucune theorie disponible.
+        </div>
+      </div>
+
+      <div class="analysis-result">
+        <h3>Contexte RAG</h3>
+        <div *ngIf="analysisData.rag && analysisData.rag.length > 0">
+          <div *ngFor="let item of analysisData.rag" class="analysis-item">
+            {{ item }}
+          </div>
+        </div>
+        <div *ngIf="!analysisData.rag || analysisData.rag.length === 0" style="color: #999;">
+          Aucun contexte RAG disponible.
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!analysisData" class="loading">
+      Cliquez sur "Analyser cette position" pour lancer l'analyse.
+    </div>
+  </div>
+  <!-- Colonne 3 : Vidéos YouTube -->
+  <div class="column">
+    <h2>Vidéos recommandees</h2>
+
+    <div *ngIf="currentOpening" style="margin-bottom: 15px;">
+      <p style="font-size: 1.05rem; color: #555;">
+        Ouverture : <strong>{{ currentOpening }}</strong>
+      </p>
+    </div>
+
+    <!-- Quota YouTube -->
+    <div *ngIf="youtubeQuota" style="margin-bottom: 15px;">
+      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Quota YouTube</h3>
+      <div class="stats-text">
+        <span>Utilise : {{ youtubeQuota.units_used }}</span>
+        <span>/ {{ youtubeQuota.daily_limit }}</span>
+      </div>
+      <div class="quota-bar">
+        <div class="quota-fill" [style.width.%]="(youtubeQuota.units_used / youtubeQuota.daily_limit) * 100"></div>
+      </div>
+      <div class="stats-text">
+        {{ (youtubeQuota.units_used / youtubeQuota.daily_limit * 100) | number:'1.0-0' }}% utilise
+      </div>
+    </div>
+
+    <!-- Stats de filtrage -->
+    <div *ngIf="youtubeFiltered" style="margin-bottom: 15px;">
+      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Filtrage</h3>
+      <div class="stats-text">
+        <span *ngIf="youtubeFiltered.durations_rejected">
+          {{ youtubeFiltered.durations_rejected }} rejetees (duree)
+        </span>
+        <span *ngIf="youtubeFiltered.channels_rejected">
+          {{ youtubeFiltered.channels_rejected }} rejetees (chaîne)
+        </span>
+        <span *ngIf="youtubeFiltered.duplicates_rejected">
+          {{ youtubeFiltered.duplicates_rejected }} doublon(s)
+        </span>
+        <span *ngIf="youtubeFiltered.total_rejected">
+          Total : {{ youtubeFiltered.total_rejected }} rejetees
+        </span>
+      </div>
+    </div>
+
+    <!-- Liste des vidéos -->
+    <div *ngIf="videos && videos.length > 0">
+      <div *ngFor="let video of videos" class="video-card">
+        <img [src]="video.thumbnail" alt="Thumbnail" class="video-thumb" />
+        <div class="video-info">
+          <a [href]="video.url" target="_blank" class="video-title">
+            {{ video.title }}
+          </a>
+          <div class="video-meta">
+            <span class="badge" *ngIf="video.duration_formatted">
+              {{ video.duration_formatted }}
+            </span>
+            <span *ngIf="video.channel">
+              {{ video.channel }}
+            </span>
+          </div>
+          <p class="video-description">
+            {{ video.description }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!videos || videos.length === 0" class="loading">
+      Aucune vidéo recommandee pour le moment. Analysez une position pour en obtenir.
     </div>
   </div>
 </div>

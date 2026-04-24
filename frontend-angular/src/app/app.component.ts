@@ -1,3 +1,4 @@
+
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -18,8 +19,10 @@ export class AppComponent {
   friendlyEval: string = '';
   videos: any[] = [];
   currentOpening: string = '';
+  youtubeQuota: any = null;
+  youtubeFiltered: any = null;
   private apiBase = `http://${window.location.hostname}:8000`;
-  
+
   // MongoDB
   username = '';
   email = '';
@@ -37,6 +40,8 @@ export class AppComponent {
     const fen = this.board.getFEN();
     this.errorMessage = '';
     this.analysisData = null;
+    this.youtubeQuota = null;
+    this.youtubeFiltered = null;
 
     fetch(`${this.apiBase}/analyze`, {
       method: 'POST',
@@ -47,7 +52,7 @@ export class AppComponent {
     .then(data => {
       this.analysisData = data;
       this.parseStockfish(data?.analysis?.result || '');
-      
+
       // Fetch related videos based on opening recommendations
       if (data?.recommendations?.length > 0) {
         const openingName = data.recommendations[0].split(' - ')[0];
@@ -65,6 +70,8 @@ export class AppComponent {
     .then(res => res.json())
     .then(data => {
       this.videos = data.videos || [];
+      this.youtubeQuota = data.quota || null;
+      this.youtubeFiltered = data.filtered || null;
     })
     .catch(err => {
       this.videos = [];
@@ -73,10 +80,10 @@ export class AppComponent {
 
   createUser() {
     if (!this.username || !this.email) {
-      this.errorMessage = 'Veuillez remplir le nom et l\'email';
+      this.errorMessage = "Veuillez remplir le nom et l'email";
       return;
     }
-    
+
     fetch(`${this.apiBase}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -100,7 +107,7 @@ export class AppComponent {
 
   saveGame() {
     if (!this.userId || !this.analysisData) return;
-    
+
     fetch(`${this.apiBase}/games`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -124,7 +131,7 @@ export class AppComponent {
 
   loadUserGames() {
     if (!this.userId) return;
-    
+
     fetch(`${this.apiBase}/users/${this.userId}/games`)
     .then(res => res.json())
     .then(data => {
