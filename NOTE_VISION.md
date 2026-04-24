@@ -30,6 +30,18 @@ Concevoir un système avancé d'analyse vidéo pour enrichir les recommandations
 
 ---
 
+## 🧠 Modèles Pré-entraînés pour la Détection d'Échiquier
+
+| Modèle | Source | Avantage | Inconvénient |
+|--------|--------|----------|--------------|
+| **YOLOv8 + Roboflow** | Dataset "chess-board-detection" | Pré-entraîné, 95%+ précision | Nécessite dataset spécifique |
+| **OpenCV (Harris + Hough)** | Open Source | Pas d'entraînement nécessaire | Sensible aux angles, lumière |
+| **ChessVision (GitHub)** | Projet open-source | Spécifique échecs | Maintenance non garantie |
+
+**Recommandation** : YOLOv8 avec dataset Roboflow (disponible avec licence MIT).
+
+---
+
 ## ⚠️ Limites techniques et solutions
 
 | Limite | Description | Impact | Solution提案 |

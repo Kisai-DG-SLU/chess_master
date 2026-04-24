@@ -208,14 +208,14 @@ def get_user_games(user_id: str, limit: int = 10):
 
 @app.get("/api/v1/videos")
 def search_videos(opening: str):
-    """Recherche vidéos YouTube via l'API officielle."""
+    """Recherche vidéos YouTube via l'API officielle avec filtrage pertinent."""
     try:
         import os
         from urllib.parse import quote
         
         api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyCScqzwMhEK5iKyouXH7PhivnKm3q9dl0k")
         query = quote(f"{opening} chess opening")
-        url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=5&key={api_key}"
+        url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=10&key={api_key}"
         
         response = requests.get(url, timeout=10)
         data = response.json()
@@ -240,16 +240,34 @@ def search_videos(opening: str):
                 }
             }
         
-        videos = []
-        for item in items:
-            videos.append({
-                "video_id": item["id"]["videoId"],
-                "title": item["snippet"]["title"],
-                "description": item["snippet"]["description"][:200],
-                "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}",
-                "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"]
-            })
+        # Filtrage des vidéos pertinentes
+        # On ne garde que les vidéos avec "chess" dans le titre OU le nom de l'ouverture
+        filtered_videos = []
+        keywords = ["chess", opening.lower()]
         
-        return {"videos": videos, "opening": opening}
+        for item in items:
+            title = item["snippet"]["title"].lower()
+            if any(kw in title for kw in keywords):
+                filtered_videos.append({
+                    "video_id": item["id"]["videoId"],
+                    "title": item["snippet"]["title"],
+                    "description": item["snippet"]["description"][:200],
+                    "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}",
+                    "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"],
+                    "channel": item["snippet"]["channelTitle"]
+                })
+        
+        # Quota YouTube : 1 recherche = 100 units (sur quota journalier de 10 000)
+        quota_used = 100
+        
+        return {
+            "videos": filtered_videos[:5],  # Max 5 vidéos pertinentes
+            "opening": opening,
+            "quota": {
+                "units_used": quota_used,
+                "daily_limit": 10000,
+                "percentage": f"{quota_used/100:.1f}%"
+            }
+        }
     except Exception as e:
         return {"videos": [], "error": str(e)}

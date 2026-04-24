@@ -2,14 +2,14 @@
 
 ## Build (7 000€)
 
-| Poste | Coût | Justification |
-|-------|------|---------------|
-| Développement backend | 3 000€ | 20 jours × 150€/jour (tarif développeur junior France) |
-| Intégration RAG | 1 500€ | 10 jours × 150€/jour (Milvus + embeddings) |
-| Frontend Angular | 1 500€ | 10 jours × 150€/jour (ngx-chessboard + UI) |
-| Docker & DevOps | 500€ | 3 jours × 150€/jour (docker-compose, volumes) |
-| Tests & Documentation | 500€ | 3 jours × 150€/jour (tests API, README, specs) |
-| **Total** | **7 000€** | |
+| Poste | Coût | Jours/hommes | Justification |
+|-------|------|--------------|---------------|
+| Développement backend | 3 000€ | 20 jours | 20 jours × 150€/jour (tarif développeur junior France) |
+| Intégration RAG | 1 500€ | 10 jours | 10 jours × 150€/jour (Milvus + embeddings) |
+| Frontend Angular | 1 500€ | 10 jours | 10 jours × 150€/jour (ngx-chessboard + UI) |
+| Docker & DevOps | 500€ | 3 jours | 3 jours × 150€/jour (docker-compose, volumes) |
+| Tests & Documentation | 500€ | 3 jours | 3 jours × 150€/jour (tests API, README, specs) |
+| **Total** | **7 000€** | **46 jours** | |
 
 **Base tarifaire** : 150€/jour HT = tarif moyen d'un développeur junior en France (stage/alternance facturé).
 
