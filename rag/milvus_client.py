@@ -7,9 +7,19 @@ DIMENSION = 768
 
 
 def get_embedding(text: str) -> list[float]:
-    """Generate embedding for text using a simple hash-based approach.
-    In production, use OpenAI embeddings or similar.
-    """
+    """Generate embedding for text using OpenAI embeddings."""
+    try:
+        from langchain_openai import OpenAIEmbeddings
+        import os
+        
+        api_key = os.getenv("OPENAI_API_KEY", "")
+        if api_key:
+            embeddings = OpenAIEmbeddings(api_key=api_key)
+            vector = embeddings.embed_query(text)
+            return vector
+    except Exception:
+        pass
+    
     import hashlib
     import struct
     

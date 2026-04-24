@@ -18,8 +18,10 @@ RUN pip install --no-cache-dir \
     langchain-core \
     langgraph \
     langchain-openai \
+    openai \
     pymilvus \
     requests \
+    google-api-python-client \
     stockfish \
     pytest pymongo
 
