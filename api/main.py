@@ -222,7 +222,9 @@ def search_videos(opening: str):
             h, m, s = match.groups()
             return (int(h or 0) * 3600) + (int(m or 0) * 60) + int(s or 0)
         
-        api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyCScqzwMhEK5iKyouXH7PhivnKm3q9dl0k")
+        api_key = os.getenv("YOUTUBE_API_KEY")
+        if not api_key:
+            return {"videos": [], "error": "YOUTUBE_API_KEY environment variable not set"}
         query = quote(f"{opening} chess opening")
         
         # 1. Recherche des vidéos

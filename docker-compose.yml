@@ -8,10 +8,11 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MISTRAL_API_KEY=${MISTRAL_API_KEY:-FbKmIS62U0rvtHih2j1Of7TLg5OFeSwD}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
       - MILVUS_HOST=localhost
       - MILVUS_PORT=19530
       - MONGODB_URI=mongodb://localhost:27017
+      - YOUTUBE_API_KEY=${YOUTUBE_API_KEY}
     depends_on:
       - milvus
       - mongodb
