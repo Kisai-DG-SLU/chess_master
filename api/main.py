@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional, List
+import requests
 import agent.graph as agent_graph
 from mongodb.models import MongoDB
 
@@ -38,6 +39,39 @@ def health():
     return {"status": "ok"}
 
 
+@app.get("/api/v1/moves")
+def get_theoretical_moves(fen: str):
+    """Récupère les coups théoriques depuis l'API Lichess."""
+    try:
+        url = "https://lichess.org/api/book/standard"
+        response = requests.get(url, params={"fen": fen}, timeout=5)
+        if response.status_code == 200:
+            data = response.json()
+            moves = data.get("moves", [])
+            return {"fen": fen, "moves": moves}
+        return {"fen": fen, "moves": [], "error": "Lichess API unavailable"}
+    except Exception as e:
+        return {"fen": fen, "moves": [], "error": str(e)}
+
+
+@app.get("/api/v1/evaluate")
+def evaluate_position(fen: str):
+    """Évalue la position via Stockfish."""
+    try:
+        import stockfish
+        sf = stockfish.Stockfish(path="/usr/games/stockfish")
+        sf.set_fen_position(fen)
+        best_move = sf.get_best_move()
+        eval_info = sf.get_evaluation()
+        return {
+            "fen": fen,
+            "best_move": best_move,
+            "evaluation": eval_info
+        }
+    except Exception as e:
+        return {"fen": fen, "error": str(e)}
+
+
 @app.post("/analyze", response_model=AnalyzeResponse)
 def analyze(request: AnalyzeRequest):
     try:
@@ -64,6 +98,17 @@ def get_openings():
             {"name": "English Opening", "moves": "1.c4", "style": "flexible"}
         ]
     }
+
+
+@app.get("/vector-search")
+def vector_search(query: str, top_k: int = 3):
+    """Recherche vectorielle dans la base Milvus."""
+    try:
+        from rag.vector_store import search_openings
+        results = search_openings(query, top_k=top_k)
+        return {"results": results, "query": query}
+    except Exception as e:
+        return {"results": [], "error": str(e)}
 
 
 # MongoDB routes
@@ -121,15 +166,33 @@ def get_user_games(user_id: str, limit: int = 10):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/videos/{opening}")
+@app.get("/api/v1/videos")
 def search_videos(opening: str):
+    """Recherche vidéos YouTube via l'API officielle."""
     try:
-        import requests, re
-        query = f"{opening} chess opening tutorial"
-        url = f"https://www.youtube.com/results?search_query={requests.utils.quote(query)}"
-        response = requests.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
-        video_ids = re.findall(r'videoId":"([a-zA-Z0-9_-]{11})', response.text)
-        videos = [{"video_id": v, "url": f"https://www.youtube.com/watch?v={v}", "title": f"{opening}"} for v in video_ids[:5]]
-        return {"videos": videos}
+        from googleapiclient.discovery import build
+        import os
+        
+        api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyCScqzwMhEK5iKyouXH7PhivnKm3q9dl0k")
+        youtube = build("youtube", "v3", developerKey=api_key)
+        
+        search_response = youtube.search().list(
+            q=f"{opening} chess opening tutorial",
+            part="snippet",
+            type="video",
+            maxResults=5
+        ).execute()
+        
+        videos = []
+        for item in search_response.get("items", []):
+            videos.append({
+                "video_id": item["id"]["videoId"],
+                "title": item["snippet"]["title"],
+                "description": item["snippet"]["description"][:200],
+                "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}",
+                "thumbnail": item["snippet"]["thumbnails"]["high"]["url"]
+            })
+        
+        return {"videos": videos, "opening": opening}
     except Exception as e:
         return {"videos": [], "error": str(e)}
