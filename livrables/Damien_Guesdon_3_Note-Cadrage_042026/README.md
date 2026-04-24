@@ -6,7 +6,7 @@
 
 ## Documents inclus
 
-### 1. Note de cadrage (NOTE_CADRAGE.md)
+### 1. Note de cadrage (`NOTE_CADRAGE.md`)
 Note détaillée de 8-10 pages couvrant :
 - Architecture technique (POC et future architecture MCP)
 - Stack technologique (LangGraph, FastAPI, Milvus, MongoDB, Angular, Stockfish)
@@ -15,14 +15,14 @@ Note détaillée de 8-10 pages couvrant :
 - Coûts opérationnels (OPEX) : 450€/mois
 - Coût total 1ère année : 12 400€
 
-### 2. Note bénéfices/limites système vidéo (NOTE_VISION.md)
+### 2. Note bénéfices/limites système vidéo (`NOTE_VISION.md`)
 Analyse du système avancé d'analyse vidéo :
 - Bénéfices attendus (précision, pertinence, UX, automatisation)
 - Limites techniques (détection échiquier, reconnaissance pièces, performance)
 - Solutions proposées pour chaque limite
 - Exemple d'utilisation concret
 
-### 3. Architecture MCP (ARCHITECTURE_MCP.md)
+### 3. Architecture MCP (`ARCHITECTURE_MCP.md`)
 Schéma d'architecture technique complète :
 - Architecture globale Client MCP → Serveurs
 - Serveurs MCP détaillés (Video, Vision, Search)
