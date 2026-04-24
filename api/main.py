@@ -180,39 +180,44 @@ def get_user_games(user_id: str, limit: int = 10):
 def search_videos(opening: str):
     """Recherche vidéos YouTube via l'API officielle."""
     try:
-        from googleapiclient.discovery import build
         import os
+        from urllib.parse import quote
         
         api_key = os.getenv("YOUTUBE_API_KEY", "AIzaSyCScqzwMhEK5iKyouXH7PhivnKm3q9dl0k")
-        youtube = build("youtube", "v3", developerKey=api_key)
+        query = quote(f"{opening} chess opening")
+        url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=5&key={api_key}"
         
-        search_response = youtube.search().list(
-            q=f"{opening} chess opening",
-            part="snippet",
-            type="video",
-            maxResults=5
-        ).execute()
+        response = requests.get(url, timeout=10)
+        data = response.json()
         
-        items = search_response.get("items", [])
+        if "error" in data:
+            return {
+                "videos": [],
+                "opening": opening,
+                "error": data["error"]["message"],
+                "debug": {"status_code": response.status_code}
+            }
+        
+        items = data.get("items", [])
         if not items:
             return {
                 "videos": [],
                 "opening": opening,
                 "debug": {
                     "query": f"{opening} chess opening",
-                    "total_results": search_response.get("pageInfo", {}).get("totalResults", 0),
-                    "message": "Aucune vidéo trouvée. Vérifiez la requête YouTube."
+                    "total_results": data.get("pageInfo", {}).get("totalResults", 0),
+                    "message": "Aucune vidéo trouvée."
                 }
             }
         
         videos = []
-        for item in search_response.get("items", []):
+        for item in items:
             videos.append({
                 "video_id": item["id"]["videoId"],
                 "title": item["snippet"]["title"],
                 "description": item["snippet"]["description"][:200],
                 "url": f"https://www.youtube.com/watch?v={item['id']['videoId']}",
-                "thumbnail": item["snippet"]["thumbnails"]["high"]["url"]
+                "thumbnail": item["snippet"]["thumbnails"]["medium"]["url"]
             })
         
         return {"videos": videos, "opening": opening}
