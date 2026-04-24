@@ -142,18 +142,26 @@ Quand tu cherches "Ruy Lopez" sur YouTube, tu trouves des vidéos de 45 minutes.
 Tu cherches "Ruy Lopez coup 5", tu obtiens le lien YouTube EXACT au timestamp du coup.
 
 ### Coûts de la Vision (Étude de Faisabilité)
+
+**Solution retenue** : Modèles pré-entraînés Hugging Face (pas d'entraînement custom)
+- `dopaul/chess_piece_detection` : Fine-tuné échecs
+- `NAKSTStudio/yolov8m-chess-piece-detection` : YOLOv8 standard
+
 | Poste | Coût |
 |-------|------|
-| Pipeline Vidéo | 2 000€ |
-| Modèle Vision (YOLO+CNN) | 3 000€ |
-| Serveur MCP & Intégration | 1 500€ |
+| Pipeline Vidéo | 1 500€ |
+| Intégration Modèle HF | 500€ |
+| Mapping FEN | 500€ |
+| Serveur MCP & Intégration | 1 000€ |
 | Frontend (Timestamp Player) | 1 000€ |
 | Tests & Documentation | 500€ |
-| **Total Build Vision** | **8 000€** |
+| **Total Build Vision** | **4 000€** |
 
-**OPEX Vision** : 600€/mois (7 200€/an)
+**OPEX Vision** : 400€/mois (4 800€/an)
 
-**Total 1ère année Vision** : **15 200€**
+**Total 1ère année Vision** : **8 800€**
+
+*(−50% vs estimation précédente grâce aux modèles pré-entraînés)*
 
 ---
 

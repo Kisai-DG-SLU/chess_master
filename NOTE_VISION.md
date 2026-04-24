@@ -30,17 +30,25 @@ Concevoir un système avancé d'analyse vidéo pour enrichir les recommandations
 
 ---
 
-## 🧠 Modèles Pré-entraînés pour la Détection d'Échiquier
+## 🧠 Modèles Pré-entraînés Hugging Face
 
-| Modèle | Source | Avantage | Inconvénient |
-|--------|--------|----------|--------------|
-| **YOLOv8 + Roboflow** | Dataset "chess-board-detection" | Pré-entraîné, 95%+ précision | Nécessite dataset spécifique |
-| **OpenCV (Harris + Hough)** | Open Source | Pas d'entraînement nécessaire | Sensible aux angles, lumière |
-| **ChessVision (GitHub)** | Projet open-source | Spécifique échecs | Maintenance non garantie |
+Le système utilise des modèles **déjà entraînés** sur Hugging Face, éliminant toute phase d'entraînement custom.
 
-**Recommandation** : YOLOv8 avec dataset Roboflow (disponible avec licence MIT).
+| Modèle | Type | Avantage | Source |
+|--------|------|----------|--------|
+| **`dopaul/chess_piece_detection`** | Détection pièces | Fine-tuné sur dataset échecs, léger | Hugging Face |
+| **`NAKSTStudio/yolov8m-chess-piece-detection`** | YOLOv8 standard | Pipeline CV éprouvé, robuste | Hugging Face |
 
----
+**Pipeline complet** :
+```
+Image/Vidéo → FFmpeg (extraction frames) → Modèle HF (détection échiquier + pièces) → Mapping cases 8x8 → Notation FEN → Indexation Milvus
+```
+
+**Avantages du choix** :
+- ✅ Zéro coût d'entraînement
+- ✅ Déploiement rapide (chargement du modèle HF)
+- ✅ GPU léger requis (inférence uniquement)
+- ✅ Communauté open-source active
 
 ## ⚠️ Limites techniques et solutions
 
@@ -92,31 +100,32 @@ Le système s'interfacera via MCP pour une modularité totale :
 
 | Poste | Coût estimé | Détails |
 |-------|-------------|---------|
-| **Développement Vidéo Pipeline** | 2 000€ | Ingestion YouTube, extraction frames, stockage |
-| **Modèle Vision (YOLO + CNN)** | 3 000€ | Entraînement, validation, optimisations |
-| **Serveur MCP & Intégration** | 1 500€ | Dev MCP server, API ChessMasterAI |
+| **Développement Vidéo Pipeline** | 1 500€ | Ingestion YouTube, extraction frames, stockage |
+| **Intégration Modèle HF** | 500€ | Chargement `dopaul/chess_piece_detection` ou `NAKSTStudio/yolov8m` |
+| **Mapping FEN** | 500€ | Algorithme détection → board 8x8 → notation FEN |
+| **Serveur MCP & Intégration** | 1 000€ | Dev MCP server, API ChessMasterAI |
 | **Frontend (Timestamp Player)** | 1 000€ | Player vidéo avec markers temporels |
 | **Tests & Documentation** | 500€ | Tests unitaires, doc MCP, guides |
-| **Total Build** | **8 000€** | |
+| **Total Build** | **4 000€** | **-50% vs estimation précédente (pas d'entraînement)** |
 
 ### 🔄 OPEX (12 mois)
 
 | Poste | Coût mensuel | Coût annuel |
 |-------|--------------|-------------|
-| **Infrastructure (GPU Cloud)** | 300€ | 3 600€ |
+| **Infrastructure (GPU Cloud léger)** | 150€ | 1 800€ |
 | **Stockage Vidéo (S3)** | 100€ | 1 200€ |
 | **API YouTube (quotas)** | 50€ | 600€ |
-| **Monitoring & Maintenance** | 150€ | 1 800€ |
-| **Total OPEX** | **600€** | **7 200€** |
+| **Monitoring & Maintenance** | 100€ | 1 200€ |
+| **Total OPEX** | **400€** | **4 800€** |
 
 ### 📊 Récapitulatif
 
 | Scénario | Coût |
 |----------|------|
-| Build Vidéo Vision | **8 000€** |
-| OPEX 12 mois | **7 200€** |
-| **Total 1ère année** | **15 200€** |
-| Build + 24 mois OPEX | **22 400€** |
+| Build Vidéo Vision | **4 000€** |
+| OPEX 12 mois | **4 800€** |
+| **Total 1ère année** | **8 800€** |
+| Build + 24 mois OPEX | **13 600€** |
 
 ---
 
@@ -124,23 +133,19 @@ Le système s'interfacera via MCP pour une modularité totale :
 
 ### Phase 1 : POC (2 semaines)
 - ✅ Pipeline basique : extraction frames (FFmpeg)
-- ✅ Détection échiquier (OpenCV/Harris)
-- ✅ Conversion FEN basique (sans CNN)
+- ✅ Intégration modèle pré-entraîné HF (`dopaul/chess_piece_detection`)
+- ✅ Conversion FEN basique (mapping détection → board 8x8)
 
-### Phase 2 : Modèle Avancé (1 mois)
-- 🔨 Entraînement CNN (10k images annotées)
-- 🔨 Optimisation précision pièces (>95%)
-- 🔨 Gestion multi-angles
-
-### Phase 3 : MCP & Production (1 mois)
+### Phase 2 : Intégration MCP (1 mois)
 - 🔨 Serveur MCP complet
 - 🔨 Intégration ChessMasterAI
 - 🔨 Player vidéo avec UI timestamps
 
-### Phase 4 : Scale & Optimisation (continu)
+### Phase 3 : Scale & Optimisation (continu)
+- 🔨 Benchmark `dopaul` vs `NAKSTStudio/yolov8m`
 - 🔨 Compression vidéos intelligente
 - 🔨 Cache FEN predictions
-- 🔨 Analytics de usage
+- 🔨 Analytics d'usage
 
 ---
 
@@ -152,8 +157,9 @@ Ce système de **Computer Vision pour vidéos d'échecs** représente une innova
 ✅ **Innovation technique** : Vision + MCP + Chess  
 ✅ **Différenciation** : Aucun concurrent direct sur le marché  
 ✅ **Évolutivité** : Base pour d'autres sports/jeux  
+✅ **Coût optimisé** : 8 800€ au lieu de 15 200€ (modèles pré-entraînés HF)  
 
-**Investissement recommandé** : 15k€ pour l'année 1, ROI attendu sous 18 mois grâce à l'acquisition utilisateurs.
+**Investissement recommandé** : 8 800€ pour l'année 1 (modèles pré-entraînés Hugging Face), ROI attendu sous 12 mois grâce à l'acquisition utilisateurs.
 
 ---
 
