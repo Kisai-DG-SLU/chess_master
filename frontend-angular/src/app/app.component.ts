@@ -18,6 +18,8 @@ export class AppComponent {
   friendlyEval: string = '';
   videos: any[] = [];
   currentOpening: string = '';
+  private apiBase = `http://${window.location.hostname}:8000`;
+  private apiBase = `http://${window.location.hostname}:8000`;
 
   resetBoard() { if (this.board) this.board.reset(); }
   setPosition(fen: string) { if (this.board) this.board.setFEN(fen); }
@@ -30,7 +32,7 @@ export class AppComponent {
     this.errorMessage = '';
     this.analysisData = null;
 
-    fetch('http://localhost:8000/analyze', {
+    fetch(`${this.apiBase}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ position: fen, player_level: this.playerLevel })
@@ -53,7 +55,7 @@ export class AppComponent {
   }
 
   fetchVideos(opening: string) {
-    fetch(`http://localhost:8000/api/v1/videos?opening=${encodeURIComponent(opening)}`)
+    fetch(`${this.apiBase}/api/v1/videos?opening=${encodeURIComponent(opening)}`)
     .then(res => res.json())
     .then(data => {
       this.videos = data.videos || [];
