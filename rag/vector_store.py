@@ -14,21 +14,21 @@ class VectorStore:
                 "id": 2,
                 "opening_name": "Sicilian Defense",
                 "moves": "1.e4 c5",
-                "description": "The most popular response to 1.e4. Leads to sharp, tactical positions.",
+                "description": "The most popular response to 1.e4. Leads to sharp, tactical positions. Many variations including Open, Closed, and Siciilian Defense.",
                 "keywords": ["tactical", "aggressive", "sharp", "black", "counterattack"]
             },
             {
                 "id": 3,
                 "opening_name": "Queen's Gambit",
                 "moves": "1.d4 d5 2.c4",
-                "description": "One of the oldest and most respected openings. White sacrifices a pawn for better development.",
+                "description": "One of the oldest and most respected openings. White sacrifices a pawn for better development and central control.",
                 "keywords": ["positional", "solid", "white", "pawn", "control"]
             },
             {
                 "id": 4,
                 "opening_name": "King's Indian Defense",
                 "moves": "1.d4 Nf6 2.c4 g6",
-                "description": "Hypermodern opening where Black allows White to occupy the center before attacking it.",
+                "description": "Hypermodern opening where Black allows White to occupy the center before attacking it. Popular among aggressive players.",
                 "keywords": ["aggressive", "hypermodern", "black", "attack", "dynamic"]
             },
             {
@@ -62,7 +62,9 @@ class VectorStore:
         ]
     
     def search(self, query: str, top_k: int = 3) -> list[dict]:
-        """Search openings by keywords."""
+        """Search openings by keywords - returns defaults if no match."""
+        import random
+        
         query_lower = query.lower()
         query_words = query_lower.split()
         
@@ -70,17 +72,24 @@ class VectorStore:
         for opening in self.openings:
             score = 0
             for word in query_words:
-                if word in opening["keywords"]:
-                    score += 1
-                if word in opening["description"].lower():
-                    score += 0.5
-                if word in opening["opening_name"].lower():
-                    score += 2
+                if len(word) > 2:
+                    if word in opening["keywords"]:
+                        score += 1
+                    if word in opening["description"].lower():
+                        score += 0.5
+                    if word in opening["opening_name"].lower():
+                        score += 2
             
             if score > 0:
                 results.append({**opening, "score": score})
         
-        results.sort(key=lambda x: x["score"], reverse=True)
+        if not results:
+            # Fallback: return random selection of all openings
+            results = [{**op} for op in self.openings]
+            random.shuffle(results)
+        else:
+            results.sort(key=lambda x: x["score"], reverse=True)
+        
         return results[:top_k]
     
     def get_all(self) -> list[dict]:
