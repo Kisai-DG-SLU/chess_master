@@ -186,7 +186,7 @@ def search_videos(opening: str):
         youtube = build("youtube", "v3", developerKey=api_key)
         
         search_response = youtube.search().list(
-            q=f"{opening} chess opening tutorial",
+            q=f"{opening} chess",
             part="snippet",
             type="video",
             maxResults=5
