@@ -37,19 +37,15 @@
 - `dopaul/chess_piece_detection` : Fine-tuné sur dataset échecs
 - `NAKSTStudio/yolov8m-chess-piece-detection` : YOLOv8 standard
 
-| Poste | Coût | Justification |
-|-------|------|---------------|
-| Pipeline Vidéo | 1 500€ | FFmpeg, extraction frames, stockage S3, métadonnées |
-| Intégration Modèle HF | 500€ | Chargement modèle pré-entraîné (pas d'entraînement) |
-| Mapping FEN | 500€ | Algorithme détection → board 8x8 → notation FEN |
-| Serveur MCP | 1 000€ | Dev serveur + API ChessMasterAI |
-| Frontend Timestamp Player | 1 000€ | Player vidéo avec marqueurs temporels |
-| Tests & Documentation | 500€ | Tests unitaires, guides MCP |
-| Infrastructure GPU léger | 1 800€/an | Instance GPU cloud léger (inférence uniquement ≈ 150€/mois) |
-| Stockage Vidéo S3 | 1 200€/an | 100€/mois pour 500Go stockage + transfert |
-| API YouTube | 600€/an | Quota API (50€/mois au-delà des quotas gratuits) |
-| Monitoring | 1 200€/an | 100€/mois (inférence + supervision) |
-| **Total Vision Build** | **4 000€** | **-50% vs estimation précédente (pas d'entraînement)** |
+| Poste | Coût | Jours/hommes | Justification |
+|-------|------|--------------|---------------|
+| Pipeline Vidéo | 1 500€ | 10 jours | FFmpeg, extraction frames, stockage S3, métadonnées |
+| Intégration Modèle HF | 500€ | 3 jours | Chargement modèle pré-entraîné (pas d'entraînement) |
+| Mapping FEN | 500€ | 3 jours | Algorithme détection → board 8x8 → notation FEN |
+| Serveur MCP | 1 000€ | 7 jours | Dev serveur + API ChessMasterAI |
+| Frontend Timestamp Player | 1 000€ | 7 jours | Player vidéo avec marqueurs temporels |
+| Tests & Documentation | 500€ | 3 jours | Tests unitaires, guides MCP |
+| **Total Vision Build** | **4 000€** | **33 jours** | **-50% vs estimation précédente (pas d'entraînement)** |
 | **Total Vision OPEX** | **4 800€/an** | |
 | **Total Vision 1ère année** | **8 800€** | |
 
