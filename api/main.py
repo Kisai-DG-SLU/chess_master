@@ -45,7 +45,7 @@ def get_theoretical_moves(fen: str):
     try:
         import urllib.parse
         escaped_fen = urllib.parse.quote(fen, safe='/')
-        url = f"https://lichess.org/api/explorer?fen={escaped_fen}&mode=historical"
+        url = f"https://explorer.lichess.ovh/moves?fen={escaped_fen}"
         response = requests.get(url, timeout=5)
         if response.status_code == 200:
             data = response.json()
@@ -54,8 +54,9 @@ def get_theoretical_moves(fen: str):
                 moves.append({
                     "uci": m.get("uci", ""),
                     "san": m.get("san", ""),
-                    "percentage": m.get("percentage", 0),
-                    "games": m.get("white", 0) + m.get("black", 0)
+                    "white": m.get("white", 0),
+                    "black": m.get("black", 0),
+                    "draws": m.get("draws", 0)
                 })
             return {"fen": fen, "moves": moves}
         return {"fen": fen, "moves": [], "error": "Lichess API unavailable"}
