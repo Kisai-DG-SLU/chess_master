@@ -68,11 +68,6 @@ export class AppComponent {
       this.errorMessage = 'Erreur API: ' + err.message;
     });
   }
-    })
-    .catch(err => {
-      this.errorMessage = 'Erreur API: ' + err.message;
-    });
-  }
 
   fetchVideos(opening: string) {
     fetch(`${this.apiBase}/api/v1/videos?opening=${encodeURIComponent(opening)}`)
