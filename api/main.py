@@ -240,7 +240,7 @@ def search_videos(opening: str):
             return {"videos": [], "opening": opening, "message": "Aucune vidéo trouvée."}
         
         # 2. Filtrer les titres pertinents
-        keywords = ["chess", opening.lower()]
+        keywords = ["échecs", "chess", opening.lower()]
         video_ids = []
         for item in items:
             title = item["snippet"]["title"].lower()
