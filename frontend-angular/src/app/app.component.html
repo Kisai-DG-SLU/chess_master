@@ -83,52 +83,40 @@
     font-style: italic;
     padding: 10px 0;
   }
-  .form-group {
-    margin-bottom: 12px;
-  }
-  .form-group label {
-    display: block;
-    margin-bottom: 4px;
-    font-weight: 600;
-    color: #555;
-  }
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-  }
   .user-id {
     font-weight: bold;
     color: #27ae60;
-    margin: 10px 0;
-  }
-  .games-list {
-    list-style: none;
-    padding: 0;
-  }
-  .games-list li {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    padding: 8px;
-    margin-bottom: 8px;
+    margin: 5px 0;
     font-size: 0.9rem;
   }
   .saved-msg {
     background: #d4edda;
     color: #155724;
-    padding: 8px;
+    padding: 6px;
     border-radius: 6px;
-    margin-top: 10px;
+    margin-top: 5px;
+    font-size: 0.9rem;
+  }
+  .quick-actions {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px solid #e0e0e0;
+  }
+  .quick-actions h3 {
+    font-size: 1rem;
+    color: #2c3e50;
+    margin-bottom: 8px;
+  }
+  .quick-actions .btn {
+    font-size: 0.85rem;
+    padding: 6px 12px;
   }
   .analysis-result {
     background: #fff;
     border: 1px solid #e0e0e0;
     border-radius: 8px;
     padding: 15px;
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .analysis-result h3 {
     margin-top: 0;
@@ -205,6 +193,15 @@
     border-radius: 4px;
     font-size: 0.8rem;
   }
+  .recommendation-badge {
+    background: #3498db;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    display: inline-block;
+    margin-bottom: 4px;
+  }
   .video-description {
     font-size: 0.85rem;
     color: #555;
@@ -237,7 +234,7 @@
 </style>
 
 <div class="app-container">
-  <!-- Colonne 1 : Echiquier -->
+  <!-- Colonne 1 : Echiquier + Profil compact -->
   <div class="column">
     <h2>Echiquier</h2>
     <ngx-chess-board
@@ -268,63 +265,33 @@
     <div *ngIf="errorMessage" class="error-message">
       {{ errorMessage }}
     </div>
-  </div>
-  <!-- Colonne 2 : Analyse & Profil -->
-  <div class="column">
-    <h2>Analyse & Profil</h2>
 
-    <!-- Section Profil -->
-    <div style="margin-bottom: 25px;">
-      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Profil Utilisateur</h3>
-      <div class="form-group">
-        <label for="username">Nom d'utilisateur :</label>
-        <input type="text" id="username" [(ngModel)]="username" placeholder="Votre nom" />
+    <!-- Profil compact -->
+    <div class="quick-actions">
+      <h3>Profil</h3>
+      <div *ngIf="!userId" style="margin-bottom: 8px;">
+        <input type="text" [(ngModel)]="username" placeholder="Nom" style="width: 45%; padding: 5px; margin-right: 5px; border: 1px solid #ddd; border-radius: 4px;" />
+        <input type="email" [(ngModel)]="email" placeholder="Email" style="width: 45%; padding: 5px; border: 1px solid #ddd; border-radius: 4px;" />
+        <br />
+        <button class="btn btn-primary" (click)="createUser()" style="margin-top: 5px; font-size: 0.85rem; padding: 5px 12px;">Creer mon compte</button>
       </div>
-      <div class="form-group">
-        <label for="email">Email :</label>
-        <input type="email" id="email" [(ngModel)]="email" placeholder="votre@email.com" />
-      </div>
-      <button class="btn btn-primary" (click)="createUser()">Creer mon compte</button>
       <div *ngIf="userId" class="user-id">
-        Utilisateur cree : {{ userId }}
+        Connecte : {{ userId }}
       </div>
-    </div>
-
-    <!-- Section sauvegarde et historique -->
-    <div style="margin-bottom: 25px;">
-      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Mes Parties</h3>
-      <button class="btn btn-success" (click)="saveGame()" [disabled]="!userId || !analysisData">
+      <button class="btn btn-success" (click)="saveGame()" [disabled]="!userId || !analysisData" style="margin-top: 5px; font-size: 0.85rem; padding: 5px 12px;">
         Sauvegarder cette partie
       </button>
       <div *ngIf="gameSaved" class="saved-msg">
-        Partie sauvegardee avec succes !
-      </div>
-      <ul *ngIf="userGames && userGames.length > 0" class="games-list">
-        <li *ngFor="let game of userGames">
-          Position FEN : {{ game.position?.substring(0, 50) }}...
-        </li>
-      </ul>
-      <div *ngIf="!userGames || userGames.length === 0" style="color: #999; font-style: italic;">
-        Aucune partie sauvegardee.
+        Sauvegardee !
       </div>
     </div>
+  </div>
+  <!-- Colonne 2 : Analyse -->
+  <div class="column">
+    <h2>Analyse</h2>
 
-    <!-- Section Résultats d'analyse -->
     <div *ngIf="analysisData">
-      <h3 style="color: #2c3e50; font-size: 1.1rem; border-bottom: 1px solid #ddd; padding-bottom: 8px;">Resultats de l'analyse</h3>
-
-      <div class="analysis-result">
-        <h3>Recommandations</h3>
-        <div *ngIf="analysisData.recommendations && analysisData.recommendations.length > 0">
-          <div *ngFor="let rec of analysisData.recommendations" class="analysis-item">
-            {{ rec }}
-          </div>
-        </div>
-        <div *ngIf="!analysisData.recommendations || analysisData.recommendations.length === 0" style="color: #999;">
-          Aucune recommendation disponible.
-        </div>
-      </div>
-
+      <!-- Evaluation Stockfish -->
       <div class="analysis-result">
         <h3>Evaluation Stockfish</h3>
         <div class="analysis-item">
@@ -335,27 +302,45 @@
         </div>
       </div>
 
+      <!-- Theorie -->
       <div class="analysis-result">
         <h3>Theorie</h3>
-        <div *ngIf="analysisData.theory && analysisData.theory.length > 0">
-          <div *ngFor="let move of analysisData.theory" class="analysis-item">
-            {{ move }}
-          </div>
+        <div *ngIf="analysisData.theory">
+          <div class="analysis-item" [innerHTML]="analysisData.theory"></div>
         </div>
-        <div *ngIf="!analysisData.theory || analysisData.theory.length === 0" style="color: #999;">
+        <div *ngIf="!analysisData.theory" style="color: #999;">
           Aucune theorie disponible.
         </div>
       </div>
 
+      <!-- Contexte RAG -->
       <div class="analysis-result">
         <h3>Contexte RAG</h3>
-        <div *ngIf="analysisData.rag && analysisData.rag.length > 0">
-          <div *ngFor="let item of analysisData.rag" class="analysis-item">
-            {{ item }}
+        <div *ngIf="analysisData.rag">
+          <div *ngIf="analysisData.rag.length > 0">
+            <div *ngFor="let item of analysisData.rag" class="analysis-item">
+              {{ item }}
+            </div>
+          </div>
+          <div *ngIf="analysisData.rag.length === 0" style="color: #999;">
+            Aucun contexte RAG disponible.
           </div>
         </div>
-        <div *ngIf="!analysisData.rag || analysisData.rag.length === 0" style="color: #999;">
+        <div *ngIf="!analysisData.rag" style="color: #999;">
           Aucun contexte RAG disponible.
+        </div>
+      </div>
+
+      <!-- Recommandations -->
+      <div class="analysis-result">
+        <h3>Recommandations</h3>
+        <div *ngIf="analysisData.recommendations && analysisData.recommendations.length > 0">
+          <div *ngFor="let rec of analysisData.recommendations" class="analysis-item">
+            {{ rec }}
+          </div>
+        </div>
+        <div *ngIf="!analysisData.recommendations || analysisData.recommendations.length === 0" style="color: #999;">
+          Aucune recommendation disponible.
         </div>
       </div>
     </div>
@@ -408,11 +393,12 @@
       </div>
     </div>
 
-    <!-- Liste des vidéos -->
+    <!-- Liste des vidéos regroupées par recommandation -->
     <div *ngIf="videos && videos.length > 0">
       <div *ngFor="let video of videos" class="video-card">
         <img [src]="video.thumbnail" alt="Thumbnail" class="video-thumb" />
         <div class="video-info">
+          <span class="recommendation-badge" *ngIf="video.recommendation">{{ video.recommendation }}</span>
           <a [href]="video.url" target="_blank" class="video-title">
             {{ video.title }}
           </a>

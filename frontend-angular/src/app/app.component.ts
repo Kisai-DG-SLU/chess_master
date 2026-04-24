@@ -18,6 +18,7 @@ export class AppComponent {
   friendlyMove: string = '';
   friendlyEval: string = '';
   videos: any[] = [];
+  allRecommendations: string[] = [];
   currentOpening: string = '';
   youtubeQuota: any = null;
   youtubeFiltered: any = null;
@@ -42,6 +43,7 @@ export class AppComponent {
     this.analysisData = null;
     this.youtubeQuota = null;
     this.youtubeFiltered = null;
+    this.allRecommendations = [];
 
     fetch(`${this.apiBase}/analyze`, {
       method: 'POST',
@@ -51,14 +53,21 @@ export class AppComponent {
     .then(res => res.json())
     .then(data => {
       this.analysisData = data;
+      this.friendlyMove = 'Inconnu';
+      this.friendlyEval = 'Non disponible';
       this.parseStockfish(data?.analysis?.result || '');
 
-      // Fetch related videos based on opening recommendations
       if (data?.recommendations?.length > 0) {
+        this.allRecommendations = data.recommendations;
         const openingName = data.recommendations[0].split(' - ')[0];
         this.currentOpening = openingName;
-        this.fetchVideos(openingName);
+        this.fetchVideosForAllOpenings();
       }
+    })
+    .catch(err => {
+      this.errorMessage = 'Erreur API: ' + err.message;
+    });
+  }
     })
     .catch(err => {
       this.errorMessage = 'Erreur API: ' + err.message;
@@ -75,6 +84,22 @@ export class AppComponent {
     })
     .catch(err => {
       this.videos = [];
+    });
+  }
+
+  fetchVideosForAllOpenings() {
+    this.videos = [];
+    const promises = this.allRecommendations.map(rec => {
+      const opening = rec.split(' - ')[0];
+      return fetch(`${this.apiBase}/api/v1/videos?opening=${encodeURIComponent(opening)}`)
+        .then(res => res.json())
+        .then(data => ({ opening, videos: (data.videos || []).slice(0, 2) }))
+        .catch(() => ({ opening, videos: [] }));
+    });
+    Promise.all(promises).then(results => {
+      results.forEach(r => {
+        this.videos.push(...r.videos.map(v => ({ ...v, recommendation: r.opening })));
+      });
     });
   }
 
