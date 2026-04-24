@@ -19,6 +19,13 @@ export class AppComponent {
   videos: any[] = [];
   currentOpening: string = '';
   private apiBase = `http://${window.location.hostname}:8000`;
+  
+  // MongoDB
+  username = '';
+  email = '';
+  userId = '';
+  gameSaved = false;
+  userGames: any[] = [];
   private apiBase = `http://${window.location.hostname}:8000`;
 
   resetBoard() { if (this.board) this.board.reset(); }
@@ -62,6 +69,70 @@ export class AppComponent {
     })
     .catch(err => {
       this.videos = [];
+    });
+  }
+
+  createUser() {
+    if (!this.username || !this.email) {
+      this.errorMessage = 'Veuillez remplir le nom et l\'email';
+      return;
+    }
+    
+    fetch(`${this.apiBase}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: this.username,
+        email: this.email,
+        level: this.playerLevel
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      this.userId = data.user_id;
+      this.username = '';
+      this.email = '';
+      this.loadUserGames();
+    })
+    .catch(err => {
+      this.errorMessage = 'Erreur lors de la création: ' + err.message;
+    });
+  }
+
+  saveGame() {
+    if (!this.userId || !this.analysisData) return;
+    
+    fetch(`${this.apiBase}/games`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        user_id: this.userId,
+        position: this.board.getFEN(),
+        analysis: this.analysisData,
+        recommendations: this.analysisData.recommendations
+      })
+    })
+    .then(res => res.json())
+    .then(data => {
+      this.gameSaved = true;
+      setTimeout(() => this.gameSaved = false, 3000);
+      this.loadUserGames();
+    })
+    .catch(err => {
+      this.errorMessage = 'Erreur sauvegarde: ' + err.message;
+    });
+  }
+
+  loadUserGames() {
+    if (!this.userId) return;
+    
+    fetch(`${this.apiBase}/users/${this.userId}/games`)
+    .then(res => res.json())
+    .then(data => {
+      this.userGames = data.games || [];
+    })
+    .catch(err => {
+      this.userGames = [];
     });
   }
 
