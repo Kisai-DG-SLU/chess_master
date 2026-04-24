@@ -228,7 +228,7 @@ def search_videos(opening: str):
         query = quote(f"{opening} chess opening")
         
         # 1. Recherche des vidéos
-        search_url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=15&key={api_key}&key={api_key}"
+        search_url = f"https://www.googleapis.com/youtube/v3/search?q={query}&part=snippet&type=video&maxResults=15&key={api_key}&regionCode=FR&relevanceLanguage=fr"
         resp = requests.get(search_url, timeout=10)
         data = resp.json()
         
