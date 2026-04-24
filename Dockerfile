@@ -17,8 +17,6 @@ RUN pip install --no-cache-dir \
     pydantic \
     langchain-core \
     langgraph \
-    langchain-mistralai \
-    sentence-transformers \
     pymilvus \
     requests \
     google-api-python-client \
