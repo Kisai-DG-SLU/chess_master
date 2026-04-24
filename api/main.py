@@ -43,11 +43,20 @@ def health():
 def get_theoretical_moves(fen: str):
     """Récupère les coups théoriques depuis l'API Lichess."""
     try:
-        url = "https://lichess.org/api/book/standard"
-        response = requests.get(url, params={"fen": fen}, timeout=5)
+        import urllib.parse
+        escaped_fen = urllib.parse.quote(fen, safe='/')
+        url = f"https://lichess.org/api/explorer?fen={escaped_fen}&mode=historical"
+        response = requests.get(url, timeout=5)
         if response.status_code == 200:
             data = response.json()
-            moves = data.get("moves", [])
+            moves = []
+            for m in data.get("moves", []):
+                moves.append({
+                    "uci": m.get("uci", ""),
+                    "san": m.get("san", ""),
+                    "percentage": m.get("percentage", 0),
+                    "games": m.get("white", 0) + m.get("black", 0)
+                })
             return {"fen": fen, "moves": moves}
         return {"fen": fen, "moves": [], "error": "Lichess API unavailable"}
     except Exception as e:
